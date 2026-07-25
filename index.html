@@ -637,45 +637,105 @@
       flex-wrap: wrap;
     }
 
-    .scam-list { display: grid; gap: 0; }
+    .scam-list { display: grid; gap: 0.85rem; }
     .scam-item {
-      border-bottom: 1px solid rgba(216,228,220,0.1);
+      border: 1px solid rgba(216,228,220,0.12);
+      background: rgba(18,26,23,0.45);
+      overflow: hidden;
+      transition: border-color 0.25s;
     }
-    .scam-item button {
+    .scam-item.open {
+      border-color: rgba(196,163,90,0.35);
+    }
+    .scam-item button.scam-head {
       width: 100%;
       text-align: left;
       background: transparent;
       border: none;
       color: var(--paper);
-      padding: 1.1rem 0.2rem;
+      padding: 0;
       cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 1rem;
-      font-size: 1.05rem;
+      display: grid;
+      grid-template-columns: 88px 1fr auto;
+      align-items: stretch;
+      gap: 0;
+      font-size: 1.02rem;
       letter-spacing: 0.04em;
     }
-    .scam-item button span:last-child {
+    .scam-thumb {
+      width: 88px;
+      height: 88px;
+      object-fit: cover;
+      display: block;
+      filter: saturate(0.85) brightness(0.9);
+      background: #243832;
+    }
+    .scam-head-text {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0.75rem 0.9rem;
+      gap: 0.25rem;
+      min-width: 0;
+    }
+    .scam-head-text strong {
+      font-weight: 600;
+      font-size: 1.02rem;
+    }
+    .scam-head-text em {
+      font-style: normal;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      opacity: 0.45;
+      font-family: "ZCOOL XiaoWei", serif;
+    }
+    .scam-toggle {
+      display: grid;
+      place-items: center;
+      padding: 0 0.9rem;
       opacity: 0.4;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       letter-spacing: 0.12em;
       white-space: nowrap;
     }
-    .scam-item button:hover { color: var(--gold); }
+    .scam-item button.scam-head:hover .scam-head-text strong { color: var(--gold); }
     .scam-body {
       max-height: 0;
       overflow: hidden;
       opacity: 0;
-      transition: max-height 0.35s var(--ease), opacity 0.3s, padding 0.3s;
-      color: rgba(216,228,220,0.72);
+      transition: max-height 0.4s var(--ease), opacity 0.3s, padding 0.3s;
+      color: rgba(216,228,220,0.78);
       font-family: "ZCOOL XiaoWei", serif;
       font-size: 1.02rem;
     }
     .scam-item.open .scam-body {
-      max-height: 180px;
+      max-height: 420px;
       opacity: 1;
-      padding-bottom: 1.1rem;
+      padding: 0 1rem 1.1rem;
+    }
+    .scam-photo {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      display: block;
+      margin: 0.85rem 0 0.85rem;
+      filter: saturate(0.9);
+      background: #1a2420;
+    }
+    .scam-verdict { line-height: 1.7; }
+    .scam-credit {
+      margin-top: 0.65rem;
+      font-size: 0.72rem;
+      opacity: 0.35;
+      letter-spacing: 0.04em;
+    }
+    @media (max-width: 520px) {
+      .scam-item button.scam-head {
+        grid-template-columns: 72px 1fr;
+      }
+      .scam-thumb { width: 72px; height: 72px; }
+      .scam-toggle { display: none; }
+      .scam-photo { height: 130px; }
     }
 
     .game-tabs {
@@ -1010,7 +1070,7 @@
 
   <section id="scams">
     <h2 class="sec-title">人间骗局图鉴</h2>
-    <p class="sec-desc">不是阴谋论，是生活常识。点开一条，听山房怎么说。</p>
+    <p class="sec-desc">生活常识图鉴。点开看图、听山房吐槽——识破一次，命就拐一次弯。</p>
     <div class="scam-list" id="scamList"></div>
   </section>
 
@@ -1337,35 +1397,129 @@
     const scams = [
       {
         title: "「我们是一家人」",
-        verdict: "一家人不会用亲情绑架你的边界。真家人给你饭，假家人给你罪。",
+        tag: "亲情绑架",
+        verdict: "一家人不会用亲情绑架你的边界。真家人给你饭，假家人给你罪。道曰：少私寡欲，也少被「我们」绑架。",
+        img: "https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=800&h=450&q=80",
+        credit: "Photo: Unsplash",
       },
       {
         title: "「再撑一下就好了」",
-        verdict: "撑一下可以，撑一辈子叫透支。别硬撑，先放下——哪怕只放下今天。",
+        tag: "透支话术",
+        verdict: "撑一下可以，撑一辈子叫透支。别硬撑、先放下——哪怕只放下今天。知止不殆。",
+        img: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=800&h=450&q=80",
+        credit: "Photo: Unsplash",
       },
       {
         title: "「给你画个大饼」",
-        verdict: "饼香不等于能吃。问一句：发钱没有？没有，就是空气。",
+        tag: "空头支票",
+        verdict: "饼香不等于能吃。问一句：发钱没有？没有，就是空气。信言不美，美言不信。",
+        img: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=800&h=450&q=80",
+        credit: "Photo: Unsplash",
       },
       {
         title: "「你怎么这么矫情」",
-        verdict: "不舒服叫感受，不是矫情。谁让你闭嘴，谁就在骗你的神经。",
+        tag: "感受抹杀",
+        verdict: "不舒服叫感受，不是矫情。谁让你闭嘴，谁就在骗你的神经。知人者智，自知者明。",
+        img: "https://images.unsplash.com/photo-1493836512294-502baa1986e2?auto=format&fit=crop&w=800&h=450&q=80",
+        credit: "Photo: Unsplash",
       },
       {
         title: "「错过这村没这店」",
-        verdict: "真正的好机会，不靠恐吓成交。急着让你点头的，多半不干净。",
+        tag: "制造焦虑",
+        verdict: "真正的好机会，不靠恐吓成交。急着让你点头的，多半不干净。飘风不终朝，别被风速绑走。",
+        img: "https://images.unsplash.com/photo-1556740749-887f6717d7e4?auto=format&fit=crop&w=800&h=450&q=80",
+        credit: "Photo: Unsplash",
       },
       {
         title: "「大家都这样」",
-        verdict: "大家都加班，不代表加班是道。众人皆醉时，清醒叫不合群，也叫救命。",
+        tag: "从众压迫",
+        verdict: "大家都加班，不代表加班是道。众人皆醉时，清醒叫不合群，也叫救命。见素抱朴。",
+        img: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=800&h=450&q=80",
+        credit: "Photo: Unsplash",
       },
       {
         title: "「我这都是为你好」",
-        verdict: "为你好的人，会问你要不要。不征得同意的「好」，常常是控制。",
+        tag: "控制包装",
+        verdict: "为你好的人，会问你要不要。不征得同意的「好」，常常是控制。上善若水，不硬灌。",
+        img: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=800&h=450&q=80",
+        credit: "Photo: Unsplash",
       },
       {
         title: "「你不努力才会惨」",
-        verdict: "惨有很多原因。把结构性问题甩给你一个人，是最省事的骗局。",
+        tag: "甩锅结构",
+        verdict: "惨有很多原因。把结构性问题甩给你一个人，是最省事的骗局。天地不仁，别替系统背锅。",
+        img: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=800&h=450&q=80",
+        credit: "Photo: Unsplash",
+      },
+      {
+        title: "「跟我对赌一下未来」",
+        tag: "期权幻觉",
+        verdict: "未来很贵，口头期权很便宜。道生一，一生二——二生不了你的房贷。先问现金流。",
+        img: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=800&h=450&q=80",
+        credit: "Photo: Unsplash",
+      },
+      {
+        title: "「你看别人都买了」",
+        tag: "消费绑架",
+        verdict: "别人购物车满，不代表你的心要空。少私寡欲：想清楚「需要」还是「被种草」。",
+        img: "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=800&h=450&q=80",
+        credit: "Photo: Unsplash",
+      },
+      {
+        title: "「保密协议签一下哈」",
+        tag: "封口套路",
+        verdict: "真公道不怕说。急着让你闭嘴的，往往有鬼。信言不美——美得像封条的，更要当心。",
+        img: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=800&h=450&q=80",
+        credit: "Photo: Unsplash",
+      },
+      {
+        title: "「你优秀，所以多干点」",
+        tag: "能干者多劳",
+        verdict: "奖励勤奋的方式不该是惩罚更多活。无为而无不为：会推，也是一种道。",
+        img: "https://images.unsplash.com/photo-1504384764586-bb4cdc1707b0?auto=format&fit=crop&w=800&h=450&q=80",
+        credit: "Photo: Unsplash",
+      },
+      {
+        title: "「先做事，钱的事好说」",
+        tag: "先干活后画饼",
+        verdict: "好说的通常是空话。先把价说清，再动手——轻诺必寡信，自古如此。",
+        img: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=800&h=450&q=80",
+        credit: "Photo: Unsplash",
+      },
+      {
+        title: "「你不回消息就是不在乎」",
+        tag: "情绪勒索",
+        verdict: "不回可能是在修道，也可能是在睡觉。把沉默定罪，是最低成本的控制术。柔弱胜刚强。",
+        img: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&h=450&q=80",
+        credit: "Photo: Unsplash",
+      },
+      {
+        title: "「这个圈子就这样」",
+        tag: "潜规则洗脑",
+        verdict: "圈子潜规则，不是天道。道法自然，不法潜规则。待不住就走，走也是一种造命。",
+        img: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=800&h=450&q=80",
+        credit: "Photo: Unsplash",
+      },
+      {
+        title: "「信任我，别查了」",
+        tag: "阻止核验",
+        verdict: "真信任不怕查。阻止你核实的，多半经不起核实。你要的是真相，不是故事。",
+        img: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&h=450&q=80",
+        credit: "Photo: Unsplash",
+      },
+      {
+        title: "「你不恋爱就落后了」",
+        tag: "婚恋焦虑",
+        verdict: "人生不是赛道，伴侣不是KPI。大器晚成：心没定，先别被催婚的锣鼓带跑。",
+        img: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=800&h=450&q=80",
+        credit: "Photo: Unsplash",
+      },
+      {
+        title: "「内幕消息，稳赚」",
+        tag: "投机诱饵",
+        verdict: "稳赚两个字，通常是诱饵。知足不辱：保本的清静，大过暴富的幻觉。",
+        img: "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&w=800&h=450&q=80",
+        credit: "Photo: Unsplash",
       },
     ];
 
@@ -1746,21 +1900,45 @@
 
     /* Scams */
     const scamList = document.getElementById("scamList");
+    const scamFallback =
+      "data:image/svg+xml," +
+      encodeURIComponent(
+        `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450"><rect fill="#243832" width="100%" height="100%"/><text x="50%" y="50%" fill="#c4a35a" font-size="28" text-anchor="middle" font-family="serif">无为山房</text></svg>`
+      );
+
     scams.forEach((s) => {
       const item = document.createElement("div");
       item.className = "scam-item";
-      item.innerHTML = `<button type="button"><span>${s.title}</span><span>展开</span></button><div class="scam-body">${s.verdict}</div>`;
+      item.innerHTML =
+        `<button type="button" class="scam-head">` +
+        `<img class="scam-thumb" src="${s.img}" alt="" loading="lazy" decoding="async" />` +
+        `<span class="scam-head-text"><strong>${s.title}</strong><em>${s.tag}</em></span>` +
+        `<span class="scam-toggle">展开</span>` +
+        `</button>` +
+        `<div class="scam-body">` +
+        `<img class="scam-photo" src="${s.img}" alt="" loading="lazy" decoding="async" />` +
+        `<p class="scam-verdict">${s.verdict}</p>` +
+        `<p class="scam-credit">${s.credit} · 仅作氛围配图</p>` +
+        `</div>`;
+
+      item.querySelectorAll("img").forEach((img) => {
+        img.addEventListener("error", () => {
+          img.src = scamFallback;
+        });
+      });
+
       const btn = item.querySelector("button");
-      const label = btn.querySelector("span:last-child");
+      const label = item.querySelector(".scam-toggle");
       btn.addEventListener("click", () => {
         const open = item.classList.contains("open");
         scamList.querySelectorAll(".scam-item").forEach((el) => {
           el.classList.remove("open");
-          el.querySelector("span:last-child").textContent = "展开";
+          const t = el.querySelector(".scam-toggle");
+          if (t) t.textContent = "展开";
         });
         if (!open) {
           item.classList.add("open");
-          label.textContent = "收起";
+          if (label) label.textContent = "收起";
         }
       });
       scamList.appendChild(item);
