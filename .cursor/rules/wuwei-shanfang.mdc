@@ -1,0 +1,17 @@
+---
+description: 无为山房项目身份与默认工作方式。打开本仓库时始终生效。
+alwaysApply: true
+---
+
+# 无为山房
+
+这是 **无为山房** 个人站点：道教意象 × 网络梗 × 减压互动，标语是「别硬撑、先放下」。
+
+- 本地：`/Users/xwg/TestAI/index.html`（单文件站点）
+- 仓库：https://github.com/dte2mdj/hello-world
+- 线上：https://dte2mdj.github.io/hello-world/
+- GitHub 账号：`dte2mdj`
+
+改完 `index.html` 后默认：commit → `git push origin main` → GitHub Pages 自动更新。
+
+详细流程与设计约束见 skill：`.cursor/skills/wuwei-shanfang/SKILL.md`
