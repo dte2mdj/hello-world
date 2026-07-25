@@ -374,6 +374,50 @@
       max-width: 22rem;
       color: var(--paper);
     }
+    .lot-advice {
+      margin-top: 1.1rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(216,228,220,0.12);
+      max-width: 24rem;
+      margin-left: auto;
+      margin-right: auto;
+      font-size: 0.95rem;
+      line-height: 1.7;
+      color: rgba(216,228,220,0.72);
+      text-align: left;
+    }
+    .lot-advice strong {
+      color: var(--gold);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+    }
+    .lot-advice.remedy {
+      border-top-color: rgba(196,92,72,0.35);
+      color: rgba(238,243,239,0.85);
+    }
+    .lot-advice.remedy strong {
+      color: var(--cinnabar);
+    }
+    .lot-remedy-actions {
+      margin-top: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .lot-remedy-actions .btn {
+      padding: 0.6rem 1rem;
+      font-size: 0.82rem;
+    }
+    .lot-rewritten {
+      margin-top: 0.85rem;
+      font-family: "Ma Shan Zheng", cursive;
+      font-size: 1.35rem;
+      color: var(--cinnabar);
+      letter-spacing: 0.12em;
+      text-align: center;
+      animation: reply-in 0.6s var(--ease) both;
+    }
+    .lot-rank.bad { color: var(--cinnabar); }
     .lot-hint { opacity: 0.45; font-size: 0.9rem; }
 
     .oracle-stage {
@@ -757,7 +801,7 @@
 
   <section id="lot">
     <h2 class="sec-title">摇签</h2>
-    <p class="sec-desc">道观抽签，但不许迷信——只许拿来笑一笑、松一口气。</p>
+    <p class="sec-desc">命数在自己手里。抽到好签，护住；抽到差签——山房帮你逆天改命。</p>
     <div class="lot-stage">
       <div>
         <div class="lot-stick" id="lotStick" aria-hidden="true"></div>
@@ -891,8 +935,9 @@
     if (!Array.isArray(stats.history)) stats.history = [];
 
     function refreshNav() {
+      const rw = stats.rewrites ? ` · 改命 ${stats.rewrites}` : "";
       document.getElementById("navStat").textContent =
-        `放下 ${stats.drops || 0} · 木鱼 ${stats.muyu || 0}`;
+        `放下 ${stats.drops || 0} · 木鱼 ${stats.muyu || 0}${rw}`;
     }
     refreshNav();
 
@@ -972,19 +1017,88 @@
       { t: "曲则全。退一步不是怂，是给你自己留条活路。", m: "第二十二章 · 退路" },
     ];
 
+    /* 核心：签只是提醒，命由人改。差签 → 给出可做的「逆天改命」功课。 */
     const lots = [
-      { rank: "上上签", t: "今日宜放下。不宜硬撑、不宜回怼、不宜深夜点外卖后悔。" },
-      { rank: "上吉签", t: "有贵人相助——贵人可能是你自己，睡个好觉就算。" },
-      { rank: "上吉签", t: "所求皆顺。前提是你别主动去求不该求的人。" },
-      { rank: "中平签", t: "不好不坏，正适合摸鱼。过分努力会显得不懂道。" },
-      { rank: "中平签", t: "静观其变。变的是别人，你负责喝茶。" },
-      { rank: "中平签", t: "半信半疑最养生：信好事，疑骗子。" },
-      { rank: "下下签", t: "小心画饼。闻到焦香的不一定是机遇，可能是烧烤摊。" },
-      { rank: "下下签", t: "今日宜防诈骗：包括情感诈骗、职场诈骗、以及自我感动。" },
-      { rank: "下下签", t: "诸事不宜硬刚。软着陆，比硬着陆体面。" },
-      { rank: "上上签", t: "心一静，事就小。山房认证：你值得被善待，包括被自己善待。" },
-      { rank: "上吉签", t: "偏财运一般，但清静运爆棚。少刷短视频，多看远处。" },
-      { rank: "中平签", t: "今日宜「已读不回」。不是冷漠，是护心。" },
+      {
+        rank: "上上签",
+        t: "今日宜放下。不宜硬撑、不宜回怼、不宜深夜点外卖后悔。",
+        advice: "好运也要自己守。少作死、多睡觉，就是最稳的护运。",
+      },
+      {
+        rank: "上吉签",
+        t: "有贵人相助——贵人可能是你自己，睡个好觉就算。",
+        advice: "把「自己」当贵人用：做一件小事兑现承诺，运就接得住。",
+      },
+      {
+        rank: "上吉签",
+        t: "所求皆顺。前提是你别主动去求不该求的人。",
+        advice: "顺的时候改小毛病。命好，也是一点点自己攒的。",
+      },
+      {
+        rank: "中平签",
+        t: "不好不坏，正适合摸鱼。过分努力会显得不懂道。",
+        advice: "中平可改上吉：今天只改一件事——早睡、少回一句、或把焦虑写进清心池。",
+      },
+      {
+        rank: "中平签",
+        t: "静观其变。变的是别人，你负责喝茶。",
+        advice: "旁观不是躺平。看清之后再出手，这一下，就是改命的力道。",
+      },
+      {
+        rank: "中平签",
+        t: "半信半疑最养生：信好事，疑骗子。",
+        advice: "识破一次骗局，命运就拐一次弯。怀疑权，握在你手里。",
+      },
+      {
+        rank: "下下签",
+        t: "小心画饼。闻到焦香的不一定是机遇，可能是烧烤摊。",
+        remedy: "逆天改命：今天拒绝一个空口承诺（不点头、不签字、不垫钱）。你一拒绝，这条命就改了半寸。",
+        action: "drop",
+        actionLabel: "把画饼扔进池子",
+      },
+      {
+        rank: "下下签",
+        t: "今日宜防诈骗：包括情感诈骗、职场诈骗、以及自我感动。",
+        remedy: "逆天改命：把正在消耗你的人和事，列一条，切断或降级联系。命不由骗子写，由你删。",
+        action: "drop",
+        actionLabel: "写下要切断的消耗",
+      },
+      {
+        rank: "下下签",
+        t: "诸事不宜硬刚。但可以改命，不必认栽。",
+        remedy: "逆天改命：硬刚改成「有边界的行动」——发一封该发的消息，或明确说一次「不」。命运怕的是清楚的人。",
+        action: "muyu",
+        actionLabel: "敲木鱼压惊改运",
+      },
+      {
+        rank: "下下签",
+        t: "心绪易乱，容易被带节奏。乱不是命，是可改的状态。",
+        remedy: "逆天改命：先调息四轮，再做决定。心定了，下下签就改成你的垫脚石。",
+        action: "breathe",
+        actionLabel: "立刻调息改命",
+      },
+      {
+        rank: "下下签",
+        t: "今日易自我审判。苛责自己，比外界更伤运。",
+        remedy: "逆天改命：对自己说一句「别硬撑、先放下」，并做一件对身体好的小事（喝水、吃饭、出门走十分钟）。身体动了，命就开始动。",
+        action: "muyu",
+        actionLabel: "敲木鱼换口气",
+      },
+      {
+        rank: "上上签",
+        t: "心一静，事就小。山房认证：你值得被善待，包括被自己善待。",
+        advice: "把这份清静当成主动选择，不是运气——选择本身就是造命。",
+      },
+      {
+        rank: "上吉签",
+        t: "偏财运一般，但清静运爆棚。少刷短视频，多看远处。",
+        advice: "主动戒半小时信息流，就是给命运腾地方。",
+      },
+      {
+        rank: "中平签",
+        t: "今日宜「已读不回」。不是冷漠，是护心。",
+        advice: "护心是改命的第一刀：你不献祭注意力，谁也夺不走你的节奏。",
+      },
     ];
 
     const scams = [
@@ -1108,6 +1222,37 @@
     const copyLot = document.getElementById("copyLot");
     let lastLot = null;
 
+    function goLotAction(kind) {
+      if (kind === "drop") {
+        document.getElementById("drop").scrollIntoView({ behavior: "smooth" });
+        setTimeout(() => worryInput.focus(), 400);
+        return;
+      }
+      document.getElementById("games").scrollIntoView({ behavior: "smooth" });
+      const tab = document.querySelector(`.game-tab[data-game="${kind}"]`);
+      if (tab) tab.click();
+      if (kind === "muyu") {
+        setTimeout(() => document.getElementById("muyuBtn").focus(), 450);
+      }
+      if (kind === "breathe") {
+        setTimeout(() => document.getElementById("breatheStart").click(), 500);
+      }
+    }
+
+    function markFateRewritten() {
+      stats.rewrites = (stats.rewrites || 0) + 1;
+      store.patch({ rewrites: stats.rewrites });
+      const box = document.createElement("p");
+      box.className = "lot-rewritten";
+      box.textContent = "命已改 · 掌握在你手里";
+      const host = lotResult.querySelector(".lot-advice") || lotResult;
+      host.appendChild(box);
+      const btn = lotResult.querySelector("[data-rewrite]");
+      if (btn) btn.disabled = true;
+      tapSound(480);
+      refreshNav();
+    }
+
     lotBtn.addEventListener("click", () => {
       lotBtn.disabled = true;
       lotStick.classList.remove("shaking");
@@ -1120,22 +1265,48 @@
           lot = lots[Math.floor(Math.random() * lots.length)];
         } while (lots.length > 1 && lot === lastLot);
         lastLot = lot;
-        lotResult.innerHTML = `<p class="lot-rank">${lot.rank}</p><p class="lot-text">${lot.t}</p>`;
+        const bad = lot.rank === "下下签";
+        if (bad) {
+          lotResult.innerHTML =
+            `<p class="lot-rank bad">${lot.rank}</p>` +
+            `<p class="lot-text">${lot.t}</p>` +
+            `<div class="lot-advice remedy"><strong>逆天改命</strong><br />${lot.remedy}` +
+            `<div class="lot-remedy-actions">` +
+            `<button type="button" class="btn btn-primary" data-lot-action="${lot.action}">${lot.actionLabel}</button>` +
+            `<button type="button" class="btn" data-rewrite>我已动手改命</button>` +
+            `</div></div>`;
+          lotResult.querySelector("[data-lot-action]").addEventListener("click", () => {
+            goLotAction(lot.action);
+          });
+          lotResult.querySelector("[data-rewrite]").addEventListener("click", markFateRewritten);
+          tapSound(300);
+        } else {
+          lotResult.innerHTML =
+            `<p class="lot-rank">${lot.rank}</p>` +
+            `<p class="lot-text">${lot.t}</p>` +
+            `<p class="lot-advice"><strong>护运一言</strong><br />${lot.advice}</p>`;
+          tapSound(440);
+        }
         lotBtn.disabled = false;
-        tapSound(440);
       }, 2200);
     });
 
     copyLot.addEventListener("click", async () => {
       const rank = lotResult.querySelector(".lot-rank");
       const text = lotResult.querySelector(".lot-text");
+      const advice = lotResult.querySelector(".lot-advice");
       if (!rank || !text) {
         copyLot.textContent = "先摇一签";
         setTimeout(() => (copyLot.textContent = "复制签文"), 1000);
         return;
       }
+      const adviceLine = advice
+        ? "\n" + advice.textContent.replace(/\s+/g, " ").trim()
+        : "";
       try {
-        await navigator.clipboard.writeText(`【无为山房·${rank.textContent}】\n${text.textContent}\n——别硬撑、先放下`);
+        await navigator.clipboard.writeText(
+          `【无为山房·${rank.textContent}】\n${text.textContent}${adviceLine}\n——命数在自己手里`
+        );
         copyLot.textContent = "已复制";
         setTimeout(() => (copyLot.textContent = "复制签文"), 1200);
       } catch {
