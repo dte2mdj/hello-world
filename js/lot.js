@@ -1,28 +1,24 @@
-/* 无为山房 · 摇签 + 自动逆天改命 */
+/* 无为山房 · 摇签 + 小说式自动逆天改命 + 纪事 */
 function initLot() {
-  const {
-    lots, pickLine, wittyPo, wittyBurn, wittyQi, wittyQiTick, wittySeal, wittyRetry, wittySuccess,
-  } = window.WuweiData;
+  const { lots, pickLine, wittyRetry, wittySuccess } = window.WuweiData;
   const { stats, persistStats } = window.WuweiStore;
+  const { buildFateJourney } = window.WuweiFateStories;
 
   const lotStage = document.getElementById("lotStage");
   const lotInner = document.getElementById("lotInner");
   const lotBtn = document.getElementById("lotBtn");
   const copyLot = document.getElementById("copyLot");
+  const chronicleEl = document.getElementById("fateChronicle");
+  const chronicleArc = document.getElementById("fateChronicleArc");
+  const fateHistoryEl = document.getElementById("fateHistory");
   let lastLot = null;
   let ritualBusy = false;
   let rewriteRound = 0;
   const GOOD_RANKS = new Set(["上上签", "上吉签"]);
+  if (!Array.isArray(stats.fateLogs)) stats.fateLogs = [];
 
   function wait(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
-  }
-
-  function resetLotStage() {
-    lotStage.className = "lot-stage";
-    ritualBusy = false;
-    lotBtn.disabled = false;
-    lotBtn.textContent = "摇一签";
   }
 
   function spawnAshes(n = 14) {
@@ -52,19 +48,57 @@ function initLot() {
     return lot;
   }
 
-  function renderRitualShell(stepIndex, title, desc, extraHtml = "") {
-    const names = ["破妄", "焚旧", "聚炁", "封印"];
-    const steps = names
-      .map((n, i) => {
-        let cls = "";
-        if (i < stepIndex) cls = "done";
-        if (i === stepIndex) cls = "on";
-        return `<li class="${cls}">${n}</li>`;
-      })
-      .join("");
-    lotInner.innerHTML =
-      `<div class="ritual"><ul class="ritual-steps">${steps}</ul>${extraHtml}` +
-      `<p class="ritual-title">${title}</p><p class="ritual-desc">${desc}</p></div>`;
+  function clearChronicle() {
+    if (chronicleEl) chronicleEl.innerHTML = "";
+    if (chronicleArc) chronicleArc.textContent = "等待下一场改命…";
+  }
+
+  function appendChronicle(chapter, arcMeta) {
+    if (!chronicleEl) return;
+    if (arcMeta && chronicleArc) {
+      chronicleArc.textContent = `剧情线：${arcMeta.arcName} · ${arcMeta.arcTag}`;
+    }
+    const li = document.createElement("li");
+    li.className = "fate-chapter enter";
+    li.innerHTML =
+      `<div class="fate-chapter-hd"><span>${chapter.index ? `第 ${chapter.index} 幕` : "序章"}</span><strong>${chapter.title}</strong></div>` +
+      `<p>${chapter.text}</p>`;
+    chronicleEl.appendChild(li);
+    li.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }
+
+  function renderFateHistory() {
+    if (!fateHistoryEl) return;
+    fateHistoryEl.innerHTML = "";
+    const logs = stats.fateLogs || [];
+    if (!logs.length) {
+      fateHistoryEl.innerHTML = '<li class="history-empty">还没有改命实录。抽到下下签就会自动开演。</li>';
+      return;
+    }
+    logs.slice(0, 6).forEach((log) => {
+      const li = document.createElement("li");
+      li.className = "fate-history-item";
+      const summary = (log.chapters || []).map((c) => c.title).join(" → ");
+      li.innerHTML =
+        `<button type="button" class="fate-history-btn">` +
+        `<strong>${log.arcName}</strong>` +
+        `<span>${log.fromRank} → ${log.toRank}</span>` +
+        `<time>${log.when}</time>` +
+        `</button>` +
+        `<div class="fate-history-body hidden">` +
+        `<p class="fate-history-tag">${log.arcTag || ""} · ${log.rounds || 1} 回合</p>` +
+        `<ol>${(log.chapters || []).map((c) => `<li><strong>${c.title}</strong> ${c.text}</li>`).join("")}</ol>` +
+        `<p class="fate-history-end">终局：${log.toText || log.toRank}</p>` +
+        `</div>`;
+      const btn = li.querySelector("button");
+      const body = li.querySelector(".fate-history-body");
+      btn.addEventListener("click", () => {
+        body.classList.toggle("hidden");
+      });
+      // unused summary kept for potential tooltip
+      btn.title = summary;
+      fateHistoryEl.appendChild(li);
+    });
   }
 
   function followChips(htmlHost, chips) {
@@ -81,7 +115,34 @@ function initLot() {
     htmlHost.appendChild(box);
   }
 
-  function showGoodLot(lot, fromRewrite) {
+  function playFx(fx) {
+    if (fx === "ash" || fx === "flash") spawnAshes(fx === "flash" ? 18 : 12);
+    if (fx === "flash") {
+      lotStage.classList.remove("flash-red");
+      void lotStage.offsetWidth;
+      lotStage.classList.add("flash-red");
+    }
+  }
+
+  async function playChapter(chapter, journey) {
+    lotStage.className = "lot-stage " + (chapter.mood || "rewriting");
+    playFx(chapter.fx);
+    const showOrb = chapter.fx === "orb";
+    const showSeal = chapter.fx === "seal";
+    lotInner.innerHTML =
+      `<div class="ritual story-beat">` +
+      (showOrb ? `<div class="ritual-orb charged"><span>炁</span></div>` : "") +
+      (showSeal ? `<div class="ritual-seal slam">改</div>` : "") +
+      `<p class="ritual-kicker">${journey.arcName} · 第 ${chapter.index} 幕</p>` +
+      `<p class="ritual-title">${chapter.title}</p>` +
+      `<p class="ritual-desc">${chapter.text}</p>` +
+      `</div>`;
+    appendChronicle(chapter, journey);
+    tapSound(chapter.fx === "seal" ? 500 : chapter.fx === "orb" ? 360 : 280);
+    await wait(chapter.ms || 1400);
+  }
+
+  function showGoodLot(lot, fromRewrite, journeyLog) {
     lotStage.className = "lot-stage blessed";
     const note = fromRewrite
       ? `<p class="lot-advice"><strong>逆天改命成功</strong><br />${pickLine(wittySuccess)}<br />${lot.advice}</p>`
@@ -101,6 +162,9 @@ function initLot() {
         { label: "调息安神", detail: { section: "games", game: "breathe", autoStart: true } },
         { label: "再识破一条", detail: { section: "scams" } },
       ]);
+      if (journeyLog && chronicleArc) {
+        chronicleArc.textContent = `完结：${journeyLog.arcName} · ${journeyLog.fromRank} → ${lot.rank}`;
+      }
       WuweiBridge.addDao(3, "命已改。");
     }
     tapSound(fromRewrite ? 520 : 440);
@@ -111,6 +175,7 @@ function initLot() {
 
   function showPlainLot(lot) {
     lotStage.className = "lot-stage";
+    clearChronicle();
     lotInner.innerHTML =
       `<div class="lot-stick" id="lotStick" aria-hidden="true"></div>` +
       `<div id="lotResult">` +
@@ -134,80 +199,82 @@ function initLot() {
     ritualBusy = true;
     rewriteRound = 0;
     lotBtn.disabled = true;
-    lotBtn.textContent = "自动改命中…";
+    lotBtn.textContent = "剧情改命中…";
+    clearChronicle();
     let current = badLot;
+    const allChapters = [];
+    let lastJourney = null;
+
+    // 开场亮一下坏签
+    lotStage.className = "lot-stage ominous flash-red";
+    lotInner.innerHTML =
+      `<div class="ritual">` +
+      `<p class="lot-rank bad">${badLot.rank}</p>` +
+      `<p class="lot-text">${badLot.t}</p>` +
+      `<p class="ritual-title">坏签降临</p>` +
+      `<p class="ritual-desc">山房不认栽。正在为你抽取改命剧情线……</p>` +
+      `</div>`;
+    appendChronicle(
+      { index: 0, title: "序章", text: `抽得「${badLot.rank}」：${badLot.t}。改命程序启动。` },
+      { arcName: "即将开演", arcTag: "序" }
+    );
+    tapSound(260);
+    await wait(1200);
 
     while (!GOOD_RANKS.has(current.rank)) {
       rewriteRound += 1;
-      lotStage.className = "lot-stage ominous flash-red";
-      renderRitualShell(
-        0,
-        "破妄",
-        `第 ${rewriteRound} 次改命。<br />${pickLine(wittyPo)}`,
-        `<div class="lot-stick" id="lotStick"></div>` +
-          `<p class="lot-rank bad">${current.rank}</p>` +
-          `<p class="lot-text">${current.t}</p>`
-      );
-      tapSound(260);
-      await wait(1300);
-
-      lotStage.className = "lot-stage ominous";
-      const textEl = lotInner.querySelector(".lot-text");
-      const stick = document.getElementById("lotStick");
-      const title = lotInner.querySelector(".ritual-title");
-      const desc = lotInner.querySelector(".ritual-desc");
-      const steps = lotInner.querySelectorAll(".ritual-steps li");
-      steps.forEach((li, i) => {
-        li.classList.toggle("done", i < 1);
-        li.classList.toggle("on", i === 1);
+      const journey = buildFateJourney({
+        rank: current.rank,
+        sign: current.t.slice(0, 18),
+        round: rewriteRound,
+        hero: "道友",
       });
-      if (title) title.textContent = "焚旧";
-      if (desc) desc.innerHTML = pickLine(wittyBurn);
-      if (textEl) textEl.classList.add("burn");
-      if (stick) stick.classList.add("crack");
-      spawnAshes(16);
-      tapSound(220);
-      await wait(1500);
-
-      lotStage.className = "lot-stage rewriting";
-      renderRitualShell(
-        2,
-        "聚炁",
-        pickLine(wittyQi),
-        `<div class="ritual-orb charged" id="qiOrb"><span>炁</span></div>` +
-          `<div class="ritual-progress"><i id="qiBar"></i></div>` +
-          `<p class="lot-hint" id="qiHint">聚炁中…</p>`
-      );
-      const bar = document.getElementById("qiBar");
-      for (let p = 1; p <= 7; p++) {
-        bar.style.width = (p / 7) * 100 + "%";
-        document.getElementById("qiHint").textContent = wittyQiTick[p - 1];
-        tapSound(280 + p * 28);
-        await wait(240);
+      lastJourney = journey;
+      for (const ch of journey.chapters) {
+        await playChapter(ch, journey);
+        allChapters.push({
+          title: `${journey.arcName}·${ch.title}`,
+          text: ch.text,
+        });
       }
-      await wait(400);
-
-      renderRitualShell(3, "封印", pickLine(wittySeal), `<div class="ritual-seal slam">改</div>`);
-      spawnAshes(12);
-      tapSound(480);
-      await wait(1000);
 
       const forceGood = rewriteRound >= 3 || Math.random() < 0.35 + rewriteRound * 0.3;
       current = pickLot(forceGood);
+
       if (!GOOD_RANKS.has(current.rank)) {
-        lotInner.innerHTML =
-          `<div class="ritual">` +
-          `<p class="lot-rank">${current.rank}</p>` +
-          `<p class="lot-text">${current.t}</p>` +
-          `<p class="ritual-title">还不够好</p>` +
-          `<p class="ritual-desc">${pickLine(wittyRetry)}</p></div>`;
-        tapSound(300);
-        await wait(1300);
+        const twist = {
+          index: allChapters.length + 1,
+          title: "番外：还不够好",
+          mood: "ominous",
+          fx: "flash",
+          ms: 1300,
+          text: `暂得「${current.rank}」。${pickLine(wittyRetry)} 剧情续写中……`,
+        };
+        await playChapter(twist, journey);
+        allChapters.push({ title: twist.title, text: twist.text });
       }
     }
 
-    persistStats({ rewrites: (stats.rewrites || 0) + rewriteRound, lastPath: "lot" });
-    showGoodLot(current, true);
+    const now = new Date();
+    const when = `${now.getMonth() + 1}/${now.getDate()} ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+    const log = {
+      when,
+      arcName: lastJourney ? lastJourney.arcName : "逆天改命",
+      arcTag: lastJourney ? lastJourney.arcTag : "",
+      fromRank: badLot.rank,
+      toRank: current.rank,
+      toText: current.t,
+      rounds: rewriteRound,
+      chapters: allChapters,
+    };
+    const fateLogs = [log, ...(stats.fateLogs || [])].slice(0, 12);
+    persistStats({
+      rewrites: (stats.rewrites || 0) + rewriteRound,
+      fateLogs,
+      lastPath: "lot",
+    });
+    renderFateHistory();
+    showGoodLot(current, true, log);
   }
 
   function getLotStick() {
@@ -250,15 +317,19 @@ function initLot() {
     const rank = result.querySelector(".lot-rank");
     const text = result.querySelector(".lot-text");
     const extra = result.querySelector(".lot-advice, .ritual-desc");
+    const chapters = chronicleEl
+      ? [...chronicleEl.querySelectorAll("li")].map((li) => li.innerText.replace(/\s+/g, " ").trim())
+      : [];
     if (!rank || !text) {
       copyLot.textContent = "先摇一签";
       setTimeout(() => (copyLot.textContent = "复制签文"), 1000);
       return;
     }
     const extraLine = extra ? "\n" + extra.textContent.replace(/\s+/g, " ").trim() : "";
+    const storyLine = chapters.length ? "\n【改命纪事】\n" + chapters.join("\n") : "";
     try {
       await navigator.clipboard.writeText(
-        `【无为山房·${rank.textContent}】\n${text.textContent}${extraLine}\n——命数在自己手里`
+        `【无为山房·${rank.textContent}】\n${text.textContent}${extraLine}${storyLine}\n——命数在自己手里`
       );
       copyLot.textContent = "已复制";
       setTimeout(() => (copyLot.textContent = "复制签文"), 1200);
@@ -267,6 +338,8 @@ function initLot() {
       setTimeout(() => (copyLot.textContent = "复制签文"), 1200);
     }
   });
+
+  renderFateHistory();
 }
 
 window.initLot = initLot;

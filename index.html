@@ -86,18 +86,29 @@
 
   <section id="lot">
     <h2 class="sec-title">摇签</h2>
-    <p class="sec-desc">第三步：改命。抽到下下签会自动改到上吉/上上，再去做功课固本。</p>
-    <div class="lot-stage" id="lotStage">
-      <div id="lotInner">
-        <div class="lot-stick" id="lotStick" aria-hidden="true"></div>
-        <div id="lotResult">
-          <p class="lot-hint">心诚则灵。心不诚也灵，反正都是随机数。</p>
+    <p class="sec-desc">第三步：改命。下下签会开演随机小说剧情，过程写入纪事，直到上吉/上上。</p>
+    <div class="lot-layout">
+      <div class="lot-stage" id="lotStage">
+        <div id="lotInner">
+          <div class="lot-stick" id="lotStick" aria-hidden="true"></div>
+          <div id="lotResult">
+            <p class="lot-hint">心诚则灵。心不诚也灵，反正都是随机数。</p>
+          </div>
         </div>
       </div>
+      <aside class="fate-log" aria-live="polite">
+        <h3>改命纪事</h3>
+        <p class="fate-log-arc" id="fateChronicleArc">等待下一场改命…</p>
+        <ol id="fateChronicle" class="fate-chronicle"></ol>
+      </aside>
     </div>
     <div class="oracle-actions">
       <button type="button" class="btn btn-primary" id="lotBtn">摇一签</button>
       <button type="button" class="btn" id="copyLot">复制签文</button>
+    </div>
+    <div class="history fate-history-wrap">
+      <h3>往期改命实录</h3>
+      <ul id="fateHistory"></ul>
     </div>
   </section>
 
@@ -186,6 +197,7 @@
 
   <script src="./js/data.js"></script>
   <script src="./js/replies.js"></script>
+  <script src="./js/fate-stories.js"></script>
   <script src="./js/store.js"></script>
   <script src="./js/audio.js"></script>
   <script src="./js/bridge.js"></script>

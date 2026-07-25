@@ -1079,3 +1079,120 @@
       text-align: center;
     }
     .pond.has-reply .reply-meta { position: relative; }
+
+    .lot-layout {
+      display: grid;
+      grid-template-columns: 1.2fr 0.9fr;
+      gap: 1rem;
+      align-items: stretch;
+    }
+    @media (max-width: 820px) {
+      .lot-layout { grid-template-columns: 1fr; }
+    }
+    .fate-log {
+      border: 1px solid rgba(216,228,220,0.14);
+      background: rgba(18,26,23,0.5);
+      padding: 1rem 1.1rem;
+      min-height: 320px;
+      max-height: 420px;
+      display: flex;
+      flex-direction: column;
+    }
+    .fate-log h3 {
+      font-family: "Ma Shan Zheng", cursive;
+      font-size: 1.4rem;
+      letter-spacing: 0.1em;
+      color: var(--paper);
+      font-weight: 400;
+      margin-bottom: 0.35rem;
+    }
+    .fate-log-arc {
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      opacity: 0.5;
+      margin-bottom: 0.75rem;
+    }
+    .fate-chronicle {
+      list-style: none;
+      overflow-y: auto;
+      flex: 1;
+      display: grid;
+      gap: 0.7rem;
+      padding-right: 0.25rem;
+    }
+    .fate-chapter {
+      padding-bottom: 0.7rem;
+      border-bottom: 1px solid rgba(216,228,220,0.1);
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    .fate-chapter.enter {
+      animation: reply-in 0.45s var(--ease) forwards;
+    }
+    .fate-chapter-hd {
+      display: flex;
+      gap: 0.5rem;
+      align-items: baseline;
+      margin-bottom: 0.3rem;
+      font-size: 0.8rem;
+    }
+    .fate-chapter-hd span {
+      opacity: 0.4;
+      letter-spacing: 0.08em;
+    }
+    .fate-chapter-hd strong {
+      color: var(--gold);
+      font-weight: 600;
+    }
+    .fate-chapter p {
+      font-family: "ZCOOL XiaoWei", serif;
+      font-size: 0.95rem;
+      line-height: 1.65;
+      color: rgba(216,228,220,0.78);
+    }
+    .ritual-kicker {
+      font-size: 0.75rem;
+      letter-spacing: 0.14em;
+      opacity: 0.45;
+      margin-bottom: 0.45rem;
+    }
+    .fate-history-wrap { margin-top: 1.75rem; }
+    .fate-history-item {
+      border-bottom: 1px solid rgba(216,228,220,0.1);
+      padding: 0.35rem 0;
+    }
+    .fate-history-btn {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 0.75rem;
+      align-items: baseline;
+      background: transparent;
+      border: none;
+      color: var(--paper);
+      padding: 0.55rem 0;
+      cursor: pointer;
+      text-align: left;
+      font-size: 0.92rem;
+    }
+    .fate-history-btn:hover strong { color: var(--gold); }
+    .fate-history-btn span { opacity: 0.65; font-size: 0.82rem; }
+    .fate-history-btn time { opacity: 0.4; font-size: 0.78rem; }
+    .fate-history-body {
+      padding: 0 0 0.85rem;
+      font-family: "ZCOOL XiaoWei", serif;
+      font-size: 0.92rem;
+      color: rgba(216,228,220,0.72);
+    }
+    .fate-history-body.hidden { display: none; }
+    .fate-history-body ol {
+      margin: 0.5rem 0 0.75rem 1.1rem;
+      display: grid;
+      gap: 0.45rem;
+    }
+    .fate-history-tag, .fate-history-end {
+      opacity: 0.5;
+      font-size: 0.8rem;
+      letter-spacing: 0.06em;
+    }
+    .lot-stage { min-height: 320px; }

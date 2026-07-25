@@ -45,7 +45,8 @@ description: >-
 | 样式 | `css/main.css` |
 | 文案数据 | `js/data.js` |
 | **投烦恼词库/AI** | `js/replies.js`（独立维护；本地组合 + 可选 OpenAI 兼容 API） |
-| 存储/道行 | `js/store.js` |
+| **改命剧情** | `js/fate-stories.js`（小说式剧情线，随机组合幕次） |
+| 存储/道行 | `js/store.js`（含 `fateLogs` 改命实录） |
 | 总线 | `js/bridge.js` |
 | 模块 | `js/{scams,drop,lot,oracle,games,main,audio,replies}.js` |
 | Skill | `.cursor/skills/wuwei-shanfang/SKILL.md` |

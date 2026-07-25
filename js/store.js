@@ -27,9 +27,11 @@ let stats = {
   dao: 0,
   lastPath: "",
   history: [],
+  fateLogs: [],
   ...store.load(),
 };
 if (!Array.isArray(stats.history)) stats.history = [];
+if (!Array.isArray(stats.fateLogs)) stats.fateLogs = [];
 
 function refreshNav() {
   const el = document.getElementById("navStat");
