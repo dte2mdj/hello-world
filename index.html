@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>无为山房 · 别硬撑、先放下</title>
-  <meta name="description" content="无为山房：别硬撑、先放下。投烦恼、领一悟、坐忘、摸鱼。人间有诈，此处无事。" />
+  <meta name="description" content="无为山房：别硬撑、先放下。投烦恼、摇签、敲木鱼、坐忘摸鱼。人间有诈，此处无事。" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;600;700&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet" />
@@ -17,7 +17,6 @@
       --paper: #eef3ef;
       --cinnabar: #c45c48;
       --gold: #c4a35a;
-      --fog: rgba(216, 228, 220, 0.12);
       --ease: cubic-bezier(0.22, 1, 0.36, 1);
     }
 
@@ -33,7 +32,6 @@
     button, input, textarea { font: inherit; }
     a { color: inherit; }
 
-    /* —— Atmosphere —— */
     .sky {
       position: fixed;
       inset: 0;
@@ -65,8 +63,22 @@
       pointer-events: none;
       opacity: 0.55;
     }
+    .leaf {
+      position: fixed;
+      z-index: -1;
+      width: 8px;
+      height: 8px;
+      border-radius: 0 70% 0 70%;
+      background: rgba(196,163,90,0.35);
+      pointer-events: none;
+      animation: fall linear infinite;
+    }
+    @keyframes fall {
+      0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.7; }
+      100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+    }
 
-    /* —— Nav —— */
     .nav {
       position: fixed;
       top: 0; left: 0; right: 0;
@@ -85,21 +97,26 @@
     }
     .nav-links {
       display: flex;
-      gap: 1.25rem;
+      gap: 1.1rem;
       list-style: none;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       opacity: 0.75;
     }
     .nav-links a {
       text-decoration: none;
-      transition: opacity 0.2s;
+      transition: color 0.2s;
     }
-    .nav-links a:hover { opacity: 1; color: var(--gold); }
-    @media (max-width: 640px) {
-      .nav-links { display: none; }
+    .nav-links a:hover { color: var(--gold); }
+    .nav-stat {
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+      opacity: 0.55;
+      white-space: nowrap;
+    }
+    @media (max-width: 720px) {
+      .nav-links, .nav-stat { display: none; }
     }
 
-    /* —— Hero —— */
     .hero {
       min-height: 100vh;
       min-height: 100dvh;
@@ -120,7 +137,7 @@
     }
     .hero-line {
       margin-top: 1.1rem;
-      max-width: 22rem;
+      max-width: 24rem;
       font-family: "ZCOOL XiaoWei", serif;
       font-size: clamp(1.05rem, 2.5vw, 1.35rem);
       color: rgba(216,228,220,0.78);
@@ -168,8 +185,12 @@
       cursor: not-allowed;
       transform: none;
     }
+    .btn-ghost {
+      background: transparent;
+      padding: 0.55rem 0.9rem;
+      font-size: 0.8rem;
+    }
 
-    /* —— Sections —— */
     section {
       position: relative;
       padding: 5.5rem 1.5rem;
@@ -197,11 +218,7 @@
       background: linear-gradient(90deg, transparent, rgba(216,228,220,0.2), transparent);
     }
 
-    /* —— Drop worries —— */
-    .drop-box {
-      display: grid;
-      gap: 0.85rem;
-    }
+    .drop-box { display: grid; gap: 0.85rem; }
     .drop-box textarea {
       width: 100%;
       min-height: 110px;
@@ -213,10 +230,27 @@
       outline: none;
       transition: border-color 0.2s;
     }
-    .drop-box textarea:focus {
-      border-color: rgba(196,163,90,0.55);
-    }
+    .drop-box textarea:focus { border-color: rgba(196,163,90,0.55); }
     .drop-box textarea::placeholder { color: rgba(216,228,220,0.35); }
+    .quick-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+    }
+    .quick-tags button {
+      border: 1px solid rgba(216,228,220,0.18);
+      background: rgba(18,26,23,0.4);
+      color: rgba(216,228,220,0.7);
+      padding: 0.35rem 0.7rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .quick-tags button:hover {
+      border-color: rgba(196,163,90,0.45);
+      color: var(--gold);
+    }
     .pond {
       position: relative;
       min-height: 160px;
@@ -246,9 +280,7 @@
       opacity: 0;
       transform: translateY(12px);
     }
-    .reply.show {
-      animation: reply-in 0.7s var(--ease) forwards;
-    }
+    .reply.show { animation: reply-in 0.7s var(--ease) forwards; }
     @keyframes reply-in {
       to { opacity: 1; transform: translateY(0); }
     }
@@ -272,8 +304,78 @@
       0% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); filter: blur(0); }
       100% { opacity: 0; transform: translateX(-50%) translateY(-90px) scale(0.7); filter: blur(6px); }
     }
+    .history {
+      margin-top: 1.5rem;
+    }
+    .history h3 {
+      font-size: 0.85rem;
+      letter-spacing: 0.18em;
+      opacity: 0.45;
+      margin-bottom: 0.75rem;
+      font-weight: 400;
+    }
+    .history ul {
+      list-style: none;
+      display: grid;
+      gap: 0.45rem;
+    }
+    .history li {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.55rem 0;
+      border-bottom: 1px solid rgba(216,228,220,0.08);
+      font-size: 0.92rem;
+      opacity: 0.75;
+    }
+    .history time {
+      opacity: 0.45;
+      font-size: 0.78rem;
+      white-space: nowrap;
+    }
+    .history-empty { opacity: 0.4; font-size: 0.9rem; }
 
-    /* —— Oracle —— */
+    .lot-stage {
+      text-align: center;
+      padding: 2rem 1.25rem;
+      background: rgba(18,26,23,0.5);
+      border: 1px solid rgba(216,228,220,0.14);
+      min-height: 260px;
+      display: grid;
+      place-items: center;
+    }
+    .lot-stick {
+      width: 14px;
+      height: 120px;
+      margin: 0 auto 1.25rem;
+      background: linear-gradient(180deg, #c4a35a, #8a6f35);
+      border-radius: 2px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+      transform-origin: bottom center;
+    }
+    .lot-stick.shaking {
+      animation: shake 0.55s ease-in-out 4;
+    }
+    @keyframes shake {
+      0%, 100% { transform: rotate(0); }
+      25% { transform: rotate(-14deg); }
+      75% { transform: rotate(14deg); }
+    }
+    .lot-rank {
+      font-family: "Ma Shan Zheng", cursive;
+      font-size: 2.2rem;
+      color: var(--cinnabar);
+      letter-spacing: 0.12em;
+      margin-bottom: 0.5rem;
+    }
+    .lot-text {
+      font-family: "ZCOOL XiaoWei", serif;
+      font-size: 1.2rem;
+      max-width: 22rem;
+      color: var(--paper);
+    }
+    .lot-hint { opacity: 0.45; font-size: 0.9rem; }
+
     .oracle-stage {
       min-height: 220px;
       display: grid;
@@ -316,21 +418,64 @@
       flex-wrap: wrap;
     }
 
-    /* —— Games —— */
+    .scam-list { display: grid; gap: 0; }
+    .scam-item {
+      border-bottom: 1px solid rgba(216,228,220,0.1);
+    }
+    .scam-item button {
+      width: 100%;
+      text-align: left;
+      background: transparent;
+      border: none;
+      color: var(--paper);
+      padding: 1.1rem 0.2rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1rem;
+      font-size: 1.05rem;
+      letter-spacing: 0.04em;
+    }
+    .scam-item button span:last-child {
+      opacity: 0.4;
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      white-space: nowrap;
+    }
+    .scam-item button:hover { color: var(--gold); }
+    .scam-body {
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-height 0.35s var(--ease), opacity 0.3s, padding 0.3s;
+      color: rgba(216,228,220,0.72);
+      font-family: "ZCOOL XiaoWei", serif;
+      font-size: 1.02rem;
+    }
+    .scam-item.open .scam-body {
+      max-height: 180px;
+      opacity: 1;
+      padding-bottom: 1.1rem;
+    }
+
     .game-tabs {
       display: flex;
-      gap: 0.5rem;
+      gap: 0.4rem;
       margin-bottom: 1rem;
+      flex-wrap: wrap;
     }
     .game-tab {
       flex: 1;
-      padding: 0.7rem;
+      min-width: 4.5rem;
+      padding: 0.7rem 0.4rem;
       border: 1px solid rgba(216,228,220,0.18);
       background: transparent;
       color: rgba(216,228,220,0.65);
       cursor: pointer;
       letter-spacing: 0.1em;
       transition: all 0.2s;
+      font-size: 0.88rem;
     }
     .game-tab.active {
       background: rgba(61,92,79,0.45);
@@ -385,8 +530,7 @@
     .fish-game {
       position: relative;
       height: 280px;
-      background:
-        linear-gradient(180deg, rgba(36,56,50,0.3) 0%, rgba(18,26,23,0.8) 100%);
+      background: linear-gradient(180deg, rgba(36,56,50,0.3) 0%, rgba(18,26,23,0.8) 100%);
       border: 1px solid rgba(216,228,220,0.14);
       overflow: hidden;
       touch-action: none;
@@ -412,6 +556,8 @@
       transition: transform 0.15s;
       z-index: 1;
       line-height: 1;
+      border: none;
+      background: transparent;
       filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
     }
     .fish:hover { transform: scale(1.15); }
@@ -459,7 +605,82 @@
       to { transform: translateX(40px); }
     }
 
-    /* —— Footer —— */
+    .muyu {
+      text-align: center;
+      padding: 2rem 1rem;
+      background: rgba(18,26,23,0.5);
+      border: 1px solid rgba(216,228,220,0.14);
+    }
+    .muyu-btn {
+      width: 150px;
+      height: 150px;
+      margin: 0 auto 1.25rem;
+      border-radius: 50%;
+      border: 2px solid rgba(196,163,90,0.45);
+      background:
+        radial-gradient(circle at 35% 30%, #6b5340, #3d2e24 70%);
+      color: var(--gold);
+      font-family: "Ma Shan Zheng", cursive;
+      font-size: 2.4rem;
+      cursor: pointer;
+      box-shadow: inset 0 -8px 20px rgba(0,0,0,0.35);
+      transition: transform 0.08s;
+      user-select: none;
+    }
+    .muyu-btn:active, .muyu-btn.hit {
+      transform: scale(0.94);
+    }
+    .muyu-count {
+      font-size: 1.1rem;
+      letter-spacing: 0.12em;
+      margin-bottom: 0.5rem;
+    }
+    .muyu-msg {
+      opacity: 0.7;
+      min-height: 1.5em;
+      font-family: "ZCOOL XiaoWei", serif;
+    }
+
+    .breathe {
+      text-align: center;
+      padding: 2rem 1rem;
+      background: rgba(18,26,23,0.5);
+      border: 1px solid rgba(216,228,220,0.14);
+    }
+    .breathe-circle {
+      width: 150px;
+      height: 150px;
+      margin: 0 auto 1.25rem;
+      border-radius: 50%;
+      border: 2px solid rgba(216,228,220,0.25);
+      display: grid;
+      place-items: center;
+      background: rgba(61,92,79,0.2);
+      transition: transform 4s ease-in-out, background 4s ease-in-out;
+    }
+    .breathe-circle.in {
+      transform: scale(1.35);
+      background: rgba(196,163,90,0.18);
+    }
+    .breathe-circle.hold {
+      transform: scale(1.35);
+      background: rgba(196,163,90,0.28);
+    }
+    .breathe-circle.out {
+      transform: scale(1);
+      background: rgba(61,92,79,0.2);
+    }
+    .breathe-label {
+      font-family: "Ma Shan Zheng", cursive;
+      font-size: 1.8rem;
+      color: var(--gold);
+    }
+    .breathe-msg {
+      opacity: 0.7;
+      margin-bottom: 1.25rem;
+      min-height: 1.5em;
+    }
+
     footer {
       text-align: center;
       padding: 3rem 1.5rem 4rem;
@@ -468,7 +689,6 @@
       letter-spacing: 0.08em;
     }
     footer p + p { margin-top: 0.4rem; }
-
     .seal {
       display: inline-block;
       margin-top: 1rem;
@@ -486,6 +706,7 @@
 <body>
   <div class="sky" aria-hidden="true"></div>
   <div class="mist-layer" aria-hidden="true"></div>
+  <div id="leaves" aria-hidden="true"></div>
   <svg class="mountains" viewBox="0 0 1200 320" preserveAspectRatio="none" aria-hidden="true">
     <path fill="#1e2e28" d="M0,320 L0,180 L120,120 L220,200 L340,90 L480,170 L560,110 L700,200 L820,80 L960,160 L1080,100 L1200,150 L1200,320 Z"/>
     <path fill="#16241f" d="M0,320 L0,220 L160,160 L280,230 L400,140 L540,210 L680,150 L800,230 L940,130 L1100,200 L1200,170 L1200,320 Z"/>
@@ -495,9 +716,12 @@
     <div class="nav-brand">无为山房</div>
     <ul class="nav-links">
       <li><a href="#drop">投烦恼</a></li>
-      <li><a href="#oracle">今日一悟</a></li>
-      <li><a href="#games">小游戏</a></li>
+      <li><a href="#lot">摇签</a></li>
+      <li><a href="#oracle">一悟</a></li>
+      <li><a href="#scams">图鉴</a></li>
+      <li><a href="#games">功课</a></li>
     </ul>
+    <div class="nav-stat" id="navStat">放下 0 · 木鱼 0</div>
   </nav>
 
   <header class="hero">
@@ -505,7 +729,7 @@
     <p class="hero-line">别硬撑、先放下。<br />人间有诈，此处无事。把 KPI、谎言和内耗，都扔进池子里。</p>
     <div class="hero-cta">
       <a class="btn btn-primary" href="#drop">入山放下</a>
-      <a class="btn" href="#games">先摸条鱼</a>
+      <a class="btn" href="#lot">先摇一签</a>
     </div>
   </header>
 
@@ -513,14 +737,38 @@
 
   <section id="drop">
     <h2 class="sec-title">投烦恼</h2>
-    <p class="sec-desc">人生骗局千千万，先写一条。山房不存档、不审判，只负责把它吹散。</p>
+    <p class="sec-desc">人生骗局千千万，先写一条。不上传云端，只记在你这台设备里。</p>
     <div class="drop-box">
+      <div class="quick-tags" id="quickTags"></div>
       <textarea id="worryInput" maxlength="80" placeholder="例如：周一早上、领导画饼、群里已读不回、爱情诈骗、自己卷自己……"></textarea>
       <button type="button" class="btn btn-primary" id="dropBtn">投入清心池</button>
     </div>
     <div class="pond" id="pond">
       <p class="pond-hint">池水微澜，等待你的烦恼</p>
       <p class="reply" id="reply" aria-live="polite"></p>
+    </div>
+    <div class="history">
+      <h3>本机放下记录</h3>
+      <ul id="historyList"></ul>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="lot">
+    <h2 class="sec-title">摇签</h2>
+    <p class="sec-desc">道观抽签，但不许迷信——只许拿来笑一笑、松一口气。</p>
+    <div class="lot-stage">
+      <div>
+        <div class="lot-stick" id="lotStick" aria-hidden="true"></div>
+        <div id="lotResult">
+          <p class="lot-hint">心诚则灵。心不诚也灵，反正都是随机数。</p>
+        </div>
+      </div>
+    </div>
+    <div class="oracle-actions">
+      <button type="button" class="btn btn-primary" id="lotBtn">摇一签</button>
+      <button type="button" class="btn" id="copyLot">复制签文</button>
     </div>
   </section>
 
@@ -541,12 +789,22 @@
 
   <div class="divider"></div>
 
+  <section id="scams">
+    <h2 class="sec-title">人间骗局图鉴</h2>
+    <p class="sec-desc">不是阴谋论，是生活常识。点开一条，听山房怎么说。</p>
+    <div class="scam-list" id="scamList"></div>
+  </section>
+
+  <div class="divider"></div>
+
   <section id="games">
     <h2 class="sec-title">山房功课</h2>
-    <p class="sec-desc">两种修行：什么都不干，或者专心摸鱼。都比内耗强。</p>
+    <p class="sec-desc">坐忘、摸鱼、敲木鱼、调息。选一种，比内耗强。</p>
     <div class="game-tabs" role="tablist">
       <button type="button" class="game-tab active" data-game="zuowang" role="tab">坐忘</button>
       <button type="button" class="game-tab" data-game="fish" role="tab">摸鱼</button>
+      <button type="button" class="game-tab" data-game="muyu" role="tab">木鱼</button>
+      <button type="button" class="game-tab" data-game="breathe" role="tab">调息</button>
     </div>
 
     <div class="game-panel active" id="panel-zuowang">
@@ -576,6 +834,25 @@
       </div>
       <p id="fishResult" style="margin-top:1rem;text-align:center;opacity:0.75;min-height:1.5em;"></p>
     </div>
+
+    <div class="game-panel" id="panel-muyu">
+      <div class="muyu">
+        <button type="button" class="muyu-btn" id="muyuBtn" aria-label="敲木鱼">木</button>
+        <p class="muyu-count">已敲 <strong id="muyuCount">0</strong> 下</p>
+        <p class="muyu-msg" id="muyuMsg">每敲一下，人间少一点噪音。</p>
+        <button type="button" class="btn btn-ghost" id="muyuReset" style="margin-top:1rem;">清零功德</button>
+      </div>
+    </div>
+
+    <div class="game-panel" id="panel-breathe">
+      <div class="breathe">
+        <div class="breathe-circle" id="breatheCircle">
+          <span class="breathe-label" id="breatheLabel">息</span>
+        </div>
+        <p class="breathe-msg" id="breatheMsg">跟着圆圈：吸气 · 屏息 · 呼气。别想别的。</p>
+        <button type="button" class="btn btn-primary" id="breatheStart">开始调息</button>
+      </div>
+    </div>
   </section>
 
   <footer>
@@ -585,6 +862,70 @@
   </footer>
 
   <script>
+    const STORAGE_KEY = "wuwei-shanfang-v1";
+    const store = {
+      load() {
+        try {
+          return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+        } catch {
+          return {};
+        }
+      },
+      save(data) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      },
+      patch(partial) {
+        const next = { ...this.load(), ...partial };
+        this.save(next);
+        return next;
+      },
+    };
+
+    let stats = {
+      drops: 0,
+      muyu: 0,
+      fishBest: 0,
+      history: [],
+      ...store.load(),
+    };
+    if (!Array.isArray(stats.history)) stats.history = [];
+
+    function refreshNav() {
+      document.getElementById("navStat").textContent =
+        `放下 ${stats.drops || 0} · 木鱼 ${stats.muyu || 0}`;
+    }
+    refreshNav();
+
+    /* Falling leaves */
+    const leaves = document.getElementById("leaves");
+    for (let i = 0; i < 7; i++) {
+      const el = document.createElement("span");
+      el.className = "leaf";
+      el.style.left = Math.random() * 100 + "%";
+      el.style.animationDuration = 12 + Math.random() * 14 + "s";
+      el.style.animationDelay = Math.random() * 10 + "s";
+      el.style.opacity = String(0.25 + Math.random() * 0.4);
+      leaves.appendChild(el);
+    }
+
+    /* Soft tap sound */
+    let audioCtx = null;
+    function tapSound(freq = 380) {
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const o = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        o.type = "sine";
+        o.frequency.value = freq;
+        g.gain.value = 0.04;
+        o.connect(g);
+        g.connect(audioCtx.destination);
+        o.start();
+        g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.18);
+        o.stop(audioCtx.currentTime + 0.2);
+      } catch (_) {}
+    }
+
     const replies = [
       (w) => `「${w}」已投入池中。道曰：你以为很重要，宇宙连记都没记。`,
       (w) => `收到「${w}」。山风说：这事儿配不上你今晚的睡眠。`,
@@ -594,6 +935,14 @@
       (w) => `道友，关于「${w}」——能改的去改，不能改的，就当它是剧情杀。`,
       (w) => `池水回：放下「${w}」不等于认输，等于你不再给骗子续费。`,
       (w) => `「${w}」已归档至「不重要文件夹」。道家加密，老板打不开。`,
+      (w) => `已收到「${w}」。别硬撑，先喝口水。撑着的不是责任，是执念。`,
+      (w) => `「${w}」被山房退回发件人。退信理由：配不上你的清净。`,
+      (w) => `关于「${w}」：世界很吵，你的心可以小声一点。`,
+      (w) => `「${w}」已超度。功德 +1，焦虑 -1（近似值）。`,
+    ];
+
+    const quickWorryTags = [
+      "画饼", "已读不回", "内卷", "周一", "催婚", "房租", "假装很好", "焦虑到睡不着"
     ];
 
     const oracles = [
@@ -615,7 +964,108 @@
       { t: "见素抱朴，少私寡欲。购物车清一清，心就轻一轻。", m: "第十九章 · 消费观" },
       { t: "天下难事，必作于易。先喝口水，再考虑辞职。", m: "第六十三章 · 步骤" },
       { t: "圣人不积。缓存清了，执念也会轻一点。", m: "第八十一章 · 清理大师" },
+      { t: "别硬撑、先放下。撑破的是心，放下的是枷。", m: "山房心法 · 总纲" },
+      { t: "祸兮福之所倚。裁员通知来了，自由通知也到了。", m: "第五十八章 · 职场" },
+      { t: "轻诺必寡信。说过「下次一定」的，多半没有下次。", m: "第六十三章 · 识人补" },
+      { t: "大器晚成。你的人生不是短视频，别用完播率考核自己。", m: "第四十一章 · 节奏" },
+      { t: "知者不博，博者不知。什么都刷，什么都不剩。", m: "第八十一章 · 信息斋" },
+      { t: "曲则全。退一步不是怂，是给你自己留条活路。", m: "第二十二章 · 退路" },
     ];
+
+    const lots = [
+      { rank: "上上签", t: "今日宜放下。不宜硬撑、不宜回怼、不宜深夜点外卖后悔。" },
+      { rank: "上吉签", t: "有贵人相助——贵人可能是你自己，睡个好觉就算。" },
+      { rank: "上吉签", t: "所求皆顺。前提是你别主动去求不该求的人。" },
+      { rank: "中平签", t: "不好不坏，正适合摸鱼。过分努力会显得不懂道。" },
+      { rank: "中平签", t: "静观其变。变的是别人，你负责喝茶。" },
+      { rank: "中平签", t: "半信半疑最养生：信好事，疑骗子。" },
+      { rank: "下下签", t: "小心画饼。闻到焦香的不一定是机遇，可能是烧烤摊。" },
+      { rank: "下下签", t: "今日宜防诈骗：包括情感诈骗、职场诈骗、以及自我感动。" },
+      { rank: "下下签", t: "诸事不宜硬刚。软着陆，比硬着陆体面。" },
+      { rank: "上上签", t: "心一静，事就小。山房认证：你值得被善待，包括被自己善待。" },
+      { rank: "上吉签", t: "偏财运一般，但清静运爆棚。少刷短视频，多看远处。" },
+      { rank: "中平签", t: "今日宜「已读不回」。不是冷漠，是护心。" },
+    ];
+
+    const scams = [
+      {
+        title: "「我们是一家人」",
+        verdict: "一家人不会用亲情绑架你的边界。真家人给你饭，假家人给你罪。",
+      },
+      {
+        title: "「再撑一下就好了」",
+        verdict: "撑一下可以，撑一辈子叫透支。别硬撑，先放下——哪怕只放下今天。",
+      },
+      {
+        title: "「给你画个大饼」",
+        verdict: "饼香不等于能吃。问一句：发钱没有？没有，就是空气。",
+      },
+      {
+        title: "「你怎么这么矫情」",
+        verdict: "不舒服叫感受，不是矫情。谁让你闭嘴，谁就在骗你的神经。",
+      },
+      {
+        title: "「错过这村没这店」",
+        verdict: "真正的好机会，不靠恐吓成交。急着让你点头的，多半不干净。",
+      },
+      {
+        title: "「大家都这样」",
+        verdict: "大家都加班，不代表加班是道。众人皆醉时，清醒叫不合群，也叫救命。",
+      },
+      {
+        title: "「我这都是为你好」",
+        verdict: "为你好的人，会问你要不要。不征得同意的「好」，常常是控制。",
+      },
+      {
+        title: "「你不努力才会惨」",
+        verdict: "惨有很多原因。把结构性问题甩给你一个人，是最省事的骗局。",
+      },
+    ];
+
+    const muyuLines = [
+      [1, "木鱼初响，心念一震。"],
+      [10, "十声。杂念开始排队退场。"],
+      [30, "三十下。群消息暂时无权进入。"],
+      [66, "六六大顺。但你敲的是清静，不是彩票。"],
+      [108, "一百零八。传统功课达成，当代人罕见。"],
+      [200, "二百。山房怀疑你在摸鱼，但支持。"],
+      [500, "五百。建议申请「无为」职称。"],
+      [999, "九百九十九。差不多得了，去喝口水。"],
+    ];
+
+    /* Quick tags */
+    const quickTags = document.getElementById("quickTags");
+    quickWorryTags.forEach((tag) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.textContent = tag;
+      b.addEventListener("click", () => {
+        const cur = worryInput.value.trim();
+        worryInput.value = cur ? cur + "、" + tag : tag;
+        worryInput.focus();
+      });
+      quickTags.appendChild(b);
+    });
+
+    /* History */
+    const historyList = document.getElementById("historyList");
+    function renderHistory() {
+      historyList.innerHTML = "";
+      if (!stats.history.length) {
+        historyList.innerHTML = '<li class="history-empty">还空着。放下第一条吧。</li>';
+        return;
+      }
+      stats.history.slice(0, 8).forEach((item) => {
+        const li = document.createElement("li");
+        const span = document.createElement("span");
+        span.textContent = item.text;
+        const time = document.createElement("time");
+        time.textContent = item.when;
+        li.append(span, time);
+        historyList.appendChild(li);
+      });
+    }
+    renderHistory();
 
     /* Drop worries */
     const worryInput = document.getElementById("worryInput");
@@ -626,19 +1076,72 @@
     dropBtn.addEventListener("click", () => {
       const raw = worryInput.value.trim();
       const w = raw || "说不清的闷";
+      tapSound(320);
       const float = document.createElement("div");
       float.className = "worry-float";
       float.textContent = w.length > 20 ? w.slice(0, 20) + "…" : w;
       pond.appendChild(float);
       setTimeout(() => float.remove(), 1800);
 
-      const line = replies[Math.floor(Math.random() * replies.length)](w.length > 24 ? w.slice(0, 24) + "…" : w);
+      const short = w.length > 24 ? w.slice(0, 24) + "…" : w;
+      const line = replies[Math.floor(Math.random() * replies.length)](short);
       pond.classList.add("has-reply");
       replyEl.classList.remove("show");
       void replyEl.offsetWidth;
       replyEl.textContent = line;
       replyEl.classList.add("show");
       worryInput.value = "";
+
+      const now = new Date();
+      const when = `${now.getMonth() + 1}/${now.getDate()} ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+      stats.drops = (stats.drops || 0) + 1;
+      stats.history = [{ text: short, when }, ...stats.history].slice(0, 12);
+      store.patch({ drops: stats.drops, history: stats.history });
+      refreshNav();
+      renderHistory();
+    });
+
+    /* Lot */
+    const lotStick = document.getElementById("lotStick");
+    const lotResult = document.getElementById("lotResult");
+    const lotBtn = document.getElementById("lotBtn");
+    const copyLot = document.getElementById("copyLot");
+    let lastLot = null;
+
+    lotBtn.addEventListener("click", () => {
+      lotBtn.disabled = true;
+      lotStick.classList.remove("shaking");
+      void lotStick.offsetWidth;
+      lotStick.classList.add("shaking");
+      lotResult.innerHTML = '<p class="lot-hint">签筒在响……</p>';
+      setTimeout(() => {
+        let lot;
+        do {
+          lot = lots[Math.floor(Math.random() * lots.length)];
+        } while (lots.length > 1 && lot === lastLot);
+        lastLot = lot;
+        lotResult.innerHTML = `<p class="lot-rank">${lot.rank}</p><p class="lot-text">${lot.t}</p>`;
+        lotBtn.disabled = false;
+        tapSound(440);
+      }, 2200);
+    });
+
+    copyLot.addEventListener("click", async () => {
+      const rank = lotResult.querySelector(".lot-rank");
+      const text = lotResult.querySelector(".lot-text");
+      if (!rank || !text) {
+        copyLot.textContent = "先摇一签";
+        setTimeout(() => (copyLot.textContent = "复制签文"), 1000);
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(`【无为山房·${rank.textContent}】\n${text.textContent}\n——别硬撑、先放下`);
+        copyLot.textContent = "已复制";
+        setTimeout(() => (copyLot.textContent = "复制签文"), 1200);
+      } catch {
+        copyLot.textContent = "复制失败";
+        setTimeout(() => (copyLot.textContent = "复制签文"), 1200);
+      }
     });
 
     /* Oracle */
@@ -663,6 +1166,7 @@
         oracleText.style.opacity = "1";
         oracleText.style.transform = "translateY(0)";
       }, 180);
+      tapSound(360);
     }
 
     oracleBtn.addEventListener("click", pickOracle);
@@ -678,6 +1182,28 @@
       }
     });
 
+    /* Scams */
+    const scamList = document.getElementById("scamList");
+    scams.forEach((s) => {
+      const item = document.createElement("div");
+      item.className = "scam-item";
+      item.innerHTML = `<button type="button"><span>${s.title}</span><span>展开</span></button><div class="scam-body">${s.verdict}</div>`;
+      const btn = item.querySelector("button");
+      const label = btn.querySelector("span:last-child");
+      btn.addEventListener("click", () => {
+        const open = item.classList.contains("open");
+        scamList.querySelectorAll(".scam-item").forEach((el) => {
+          el.classList.remove("open");
+          el.querySelector("span:last-child").textContent = "展开";
+        });
+        if (!open) {
+          item.classList.add("open");
+          label.textContent = "收起";
+        }
+      });
+      scamList.appendChild(item);
+    });
+
     /* Game tabs */
     document.querySelectorAll(".game-tab").forEach((tab) => {
       tab.addEventListener("click", () => {
@@ -686,6 +1212,7 @@
         tab.classList.add("active");
         document.getElementById("panel-" + tab.dataset.game).classList.add("active");
         stopZuowang(false);
+        stopBreathe();
       });
     });
 
@@ -760,7 +1287,7 @@
       }, 1000);
     });
 
-    /* Fish game */
+    /* Fish */
     const fishGame = document.getElementById("fishGame");
     const fishOverlay = document.getElementById("fishOverlay");
     const fishStart = document.getElementById("fishStart");
@@ -784,12 +1311,17 @@
       clearInterval(fishCountdown);
       clearFish();
       fishOverlay.classList.remove("hidden");
+      if (fishScore > (stats.fishBest || 0)) {
+        stats.fishBest = fishScore;
+        store.patch({ fishBest: fishScore });
+      }
       let rank;
       if (fishScore >= 18) rank = "摸鱼大宗师。建议出家，或者升职。";
       else if (fishScore >= 12) rank = "得道摸鱼人。老板以为你在思考。";
       else if (fishScore >= 6) rank = "初级道友。还要多摸，路还长。";
       else rank = "心太诚了，几乎没摸到。也是一种清修。";
-      fishResult.textContent = `本局摸到 ${fishScore} 条。${rank}`;
+      const best = stats.fishBest ? ` 历史最佳 ${stats.fishBest}。` : "";
+      fishResult.textContent = `本局摸到 ${fishScore} 条。${rank}${best}`;
       fishStart.textContent = "再摸一局";
     }
 
@@ -800,16 +1332,15 @@
       el.className = "fish";
       el.textContent = fishEmojis[Math.floor(Math.random() * fishEmojis.length)];
       el.setAttribute("aria-label", "鱼");
-      const x = 8 + Math.random() * 78;
-      const y = 18 + Math.random() * 62;
-      el.style.left = x + "%";
-      el.style.top = y + "%";
+      el.style.left = 8 + Math.random() * 78 + "%";
+      el.style.top = 18 + Math.random() * 62 + "%";
       el.addEventListener("click", (e) => {
         e.stopPropagation();
         if (!fishPlaying || el.classList.contains("caught")) return;
         el.classList.add("caught");
         fishScore += 1;
         fishScoreEl.textContent = String(fishScore);
+        tapSound(520);
         setTimeout(() => el.remove(), 400);
       });
       fishGame.appendChild(el);
@@ -834,6 +1365,101 @@
         fishTimeEl.textContent = String(fishLeft);
         if (fishLeft <= 0) endFish();
       }, 1000);
+    });
+
+    /* Muyu */
+    const muyuBtn = document.getElementById("muyuBtn");
+    const muyuCount = document.getElementById("muyuCount");
+    const muyuMsg = document.getElementById("muyuMsg");
+    const muyuReset = document.getElementById("muyuReset");
+    muyuCount.textContent = String(stats.muyu || 0);
+
+    function updateMuyuMsg() {
+      let msg = "每敲一下，人间少一点噪音。";
+      for (let i = muyuLines.length - 1; i >= 0; i--) {
+        if ((stats.muyu || 0) >= muyuLines[i][0]) {
+          msg = muyuLines[i][1];
+          break;
+        }
+      }
+      muyuMsg.textContent = msg;
+    }
+    updateMuyuMsg();
+
+    muyuBtn.addEventListener("click", () => {
+      stats.muyu = (stats.muyu || 0) + 1;
+      muyuCount.textContent = String(stats.muyu);
+      store.patch({ muyu: stats.muyu });
+      refreshNav();
+      updateMuyuMsg();
+      tapSound(280);
+      muyuBtn.classList.add("hit");
+      setTimeout(() => muyuBtn.classList.remove("hit"), 80);
+    });
+
+    muyuReset.addEventListener("click", () => {
+      stats.muyu = 0;
+      muyuCount.textContent = "0";
+      store.patch({ muyu: 0 });
+      refreshNav();
+      updateMuyuMsg();
+    });
+
+    /* Breathe */
+    const breatheCircle = document.getElementById("breatheCircle");
+    const breatheLabel = document.getElementById("breatheLabel");
+    const breatheMsg = document.getElementById("breatheMsg");
+    const breatheStart = document.getElementById("breatheStart");
+    let breatheTimer = null;
+    let breatheActive = false;
+    let breatheRound = 0;
+
+    function stopBreathe() {
+      breatheActive = false;
+      if (breatheTimer) {
+        clearTimeout(breatheTimer);
+        breatheTimer = null;
+      }
+      breatheCircle.className = "breathe-circle";
+      breatheLabel.textContent = "息";
+      breatheStart.disabled = false;
+      breatheStart.textContent = breatheRound > 0 ? "再来一轮" : "开始调息";
+    }
+
+    function breathePhase(name, cls, ms, next) {
+      if (!breatheActive) return;
+      breatheCircle.className = "breathe-circle " + cls;
+      breatheLabel.textContent = name;
+      breatheTimer = setTimeout(next, ms);
+    }
+
+    function startBreatheCycle() {
+      if (!breatheActive) return;
+      breatheRound += 1;
+      breatheMsg.textContent = `第 ${breatheRound} 轮。别硬撑呼吸，顺着来。`;
+      breathePhase("吸", "in", 4000, () => {
+        breathePhase("屏", "hold", 4000, () => {
+          breathePhase("呼", "out", 4000, () => {
+            if (breatheRound >= 4) {
+              stopBreathe();
+              breatheMsg.textContent = "四轮调息完成。心慢了，世界也就慢了。";
+              breatheLabel.textContent = "定";
+              return;
+            }
+            startBreatheCycle();
+          });
+        });
+      });
+    }
+
+    breatheStart.addEventListener("click", () => {
+      stopBreathe();
+      breatheActive = true;
+      breatheRound = 0;
+      breatheStart.disabled = true;
+      breatheStart.textContent = "调息中…";
+      breatheMsg.textContent = "跟着圆圈。手机先放下。";
+      startBreatheCycle();
     });
   </script>
 </body>
