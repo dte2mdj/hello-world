@@ -957,6 +957,30 @@
       letter-spacing: 0.08em;
     }
     footer p + p { margin-top: 0.4rem; }
+    .friends {
+      margin: 1.5rem auto 0.5rem;
+      max-width: 22rem;
+      opacity: 1;
+    }
+    .friends-label {
+      font-size: 0.75rem;
+      letter-spacing: 0.16em;
+      opacity: 0.7;
+      margin-bottom: 0.55rem;
+    }
+    .friends a {
+      display: inline-block;
+      color: var(--gold);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      border-bottom: 1px solid rgba(196,163,90,0.35);
+      padding-bottom: 0.15rem;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .friends a:hover {
+      color: var(--paper);
+      border-bottom-color: rgba(238,243,239,0.5);
+    }
     .seal {
       display: inline-block;
       margin-top: 1rem;
