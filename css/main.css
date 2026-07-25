@@ -1026,3 +1026,56 @@
       letter-spacing: 0.14em;
     }
     .journey span { opacity: 0.45; }
+
+    .ai-panel {
+      margin-top: 1rem;
+      padding: 0.85rem 1rem;
+      border: 1px dashed rgba(216,228,220,0.2);
+      background: rgba(18,26,23,0.35);
+      color: rgba(216,228,220,0.75);
+      font-size: 0.88rem;
+    }
+    .ai-panel summary {
+      cursor: pointer;
+      letter-spacing: 0.1em;
+      color: var(--gold);
+      list-style: none;
+    }
+    .ai-panel summary::-webkit-details-marker { display: none; }
+    .ai-hint {
+      margin: 0.75rem 0;
+      opacity: 0.7;
+      line-height: 1.6;
+      font-family: "ZCOOL XiaoWei", serif;
+    }
+    .ai-row {
+      display: grid;
+      gap: 0.35rem;
+      margin-bottom: 0.65rem;
+    }
+    .ai-row input[type="text"],
+    .ai-row input[type="password"] {
+      width: 100%;
+      padding: 0.55rem 0.7rem;
+      border: 1px solid rgba(216,228,220,0.22);
+      background: rgba(18,26,23,0.65);
+      color: var(--paper);
+      outline: none;
+    }
+    .ai-row input[type="checkbox"] {
+      width: auto;
+      margin-right: 0.45rem;
+    }
+    .ai-status {
+      margin-top: 0.75rem;
+      opacity: 0.55;
+      font-size: 0.8rem;
+    }
+    .reply-meta {
+      margin-top: 0.75rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      opacity: 0.4;
+      text-align: center;
+    }
+    .pond.has-reply .reply-meta { position: relative; }

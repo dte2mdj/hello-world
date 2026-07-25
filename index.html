@@ -54,15 +54,26 @@
 
   <section id="drop">
     <h2 class="sec-title">投烦恼</h2>
-    <p class="sec-desc">第二步：放下。不上传云端，只记在你这台设备。投完可去求一悟或改命。</p>
+    <p class="sec-desc">第二步：放下。回应由本地动态词库组合；也可选开 AI，密钥只存在你这台设备。</p>
     <div class="drop-box">
       <div class="quick-tags" id="quickTags"></div>
       <textarea id="worryInput" maxlength="80" placeholder="例如：周一早上、领导画饼、群里已读不回、爱情诈骗、自己卷自己……"></textarea>
       <button type="button" class="btn btn-primary" id="dropBtn">投入清心池</button>
     </div>
+    <details class="ai-panel">
+      <summary>AI 动态解忧（可选）</summary>
+      <p class="ai-hint">兼容 OpenAI 接口。可用 DeepSeek / 硅基流动 / Groq 等，密钥仅存本机，不上传山房服务器（本站无后端）。</p>
+      <label class="ai-row"><input type="checkbox" id="aiEnabled" /> 启用 AI 生成</label>
+      <label class="ai-row">API Key <input type="password" id="aiKey" placeholder="sk-…" autocomplete="off" /></label>
+      <label class="ai-row">Base URL <input type="text" id="aiBase" placeholder="https://api.openai.com/v1" /></label>
+      <label class="ai-row">Model <input type="text" id="aiModel" placeholder="gpt-4o-mini" /></label>
+      <button type="button" class="btn" id="aiSave">保存到本机</button>
+      <p class="ai-status" id="aiStatus"></p>
+    </details>
     <div class="pond" id="pond">
       <p class="pond-hint">池水微澜，等待你的烦恼</p>
       <p class="reply" id="reply" aria-live="polite"></p>
+      <p class="reply-meta" id="replyMeta"></p>
     </div>
     <div id="dropFollow"></div>
     <div class="history">
@@ -174,6 +185,7 @@
   </footer>
 
   <script src="./js/data.js"></script>
+  <script src="./js/replies.js"></script>
   <script src="./js/store.js"></script>
   <script src="./js/audio.js"></script>
   <script src="./js/bridge.js"></script>

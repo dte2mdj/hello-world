@@ -44,15 +44,22 @@ description: >-
 | 页面 | `index.html` |
 | 样式 | `css/main.css` |
 | 文案数据 | `js/data.js` |
+| **投烦恼词库/AI** | `js/replies.js`（独立维护；本地组合 + 可选 OpenAI 兼容 API） |
 | 存储/道行 | `js/store.js` |
 | 总线 | `js/bridge.js` |
-| 模块 | `js/{scams,drop,lot,oracle,games,main,audio}.js` |
+| 模块 | `js/{scams,drop,lot,oracle,games,main,audio,replies}.js` |
 | Skill | `.cursor/skills/wuwei-shanfang/SKILL.md` |
 | 规则 | `.cursor/rules/wuwei-shanfang.mdc` |
 | 远程 | `https://github.com/dte2mdj/hello-world.git` |
 | 线上 | `https://dte2mdj.github.io/hello-world/` |
 
 纯静态、无构建。本地预览需 HTTP（相对路径）：`python3 -m http.server`。
+
+### 投烦恼回应怎么改
+
+- 词库与组合逻辑：只改 [`js/replies.js`](js/replies.js)（`topics` / `generalLines` / `openers` / `closers`）
+- AI：用户在页面「AI 动态解忧」填入兼容 OpenAI 的 Key/Base/Model，存 `localStorage`；失败自动回落本地词库
+- 不要把 API Key 写进仓库
 
 ## 改站流程
 
