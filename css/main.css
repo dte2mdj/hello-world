@@ -957,103 +957,47 @@
       letter-spacing: 0.08em;
     }
     footer p + p { margin-top: 0.4rem; }
-    .friends {
-      margin: 1.5rem auto 0.5rem;
-      max-width: 22rem;
-      opacity: 1;
-    }
-    .friends-label {
-      font-size: 0.75rem;
-      letter-spacing: 0.16em;
-      opacity: 0.7;
-      margin-bottom: 0.55rem;
-    }
-    .friends a {
-      display: inline-block;
-      color: var(--gold);
-      text-decoration: none;
-      letter-spacing: 0.1em;
-      border-bottom: 1px solid rgba(196,163,90,0.35);
-      padding-bottom: 0.15rem;
-      transition: border-color 0.2s, color 0.2s;
-    }
-    .friends a:hover {
-      color: var(--paper);
-      border-bottom-color: rgba(238,243,239,0.5);
-    }
 
-    .friends-section {
-      max-width: 720px;
-    }
-    .friend-card {
-      display: grid;
-      grid-template-columns: auto 1fr;
-      gap: 1.1rem;
-      align-items: center;
-      margin-top: 0.5rem;
-      padding: 1.25rem 1.35rem;
-      text-decoration: none;
-      color: var(--paper);
-      border: 1px solid rgba(196,163,90,0.4);
+    .friend-band {
+      position: relative;
+      z-index: 1;
+      margin: 0;
+      padding: 2.75rem 1.5rem 3rem;
+      text-align: center;
       background:
-        linear-gradient(135deg, rgba(196,92,72,0.18), transparent 42%),
-        linear-gradient(180deg, rgba(61,92,79,0.45), rgba(18,26,23,0.75));
-      box-shadow: 0 12px 40px rgba(0,0,0,0.25);
-      transition: transform 0.25s var(--ease), border-color 0.25s, box-shadow 0.25s;
+        linear-gradient(180deg, transparent, rgba(196,163,90,0.08) 30%, rgba(196,92,72,0.1) 70%, transparent),
+        rgba(22, 34, 30, 0.92);
+      border-top: 1px solid rgba(196,163,90,0.35);
+      border-bottom: 1px solid rgba(196,163,90,0.35);
     }
-    .friend-card:hover {
-      transform: translateY(-3px);
-      border-color: rgba(196,163,90,0.75);
-      box-shadow: 0 16px 48px rgba(0,0,0,0.32);
-    }
-    .friend-card-mark {
-      width: 3.4rem;
-      height: 3.4rem;
-      display: grid;
-      place-items: center;
-      border: 2px solid var(--cinnabar);
-      color: var(--cinnabar);
-      font-family: "Ma Shan Zheng", cursive;
-      font-size: 1.7rem;
-      letter-spacing: 0.08em;
-      transform: rotate(-8deg);
-      flex-shrink: 0;
-    }
-    .friend-card-body {
-      display: grid;
-      gap: 0.25rem;
-      min-width: 0;
-    }
-    .friend-card-body strong {
-      font-family: "Ma Shan Zheng", cursive;
-      font-size: 1.65rem;
-      letter-spacing: 0.08em;
-      font-weight: 400;
-      color: var(--paper);
-    }
-    .friend-card-body em {
-      font-style: normal;
+    .friend-band-label {
       font-size: 0.78rem;
-      letter-spacing: 0.04em;
-      opacity: 0.45;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      letter-spacing: 0.28em;
+      color: rgba(216,228,220,0.55);
+      margin-bottom: 0.85rem;
     }
-    .friend-card-body span:last-child {
-      margin-top: 0.2rem;
-      font-family: "ZCOOL XiaoWei", serif;
-      font-size: 0.95rem;
+    .friend-band > a {
+      display: inline-block;
+      font-family: "Ma Shan Zheng", cursive;
+      font-size: clamp(2rem, 6vw, 2.8rem);
+      letter-spacing: 0.12em;
+      color: var(--paper);
+      text-decoration: none;
+      border-bottom: 2px solid var(--cinnabar);
+      line-height: 1.2;
+      padding-bottom: 0.15rem;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .friend-band > a:hover {
       color: var(--gold);
-      letter-spacing: 0.06em;
+      border-bottom-color: var(--gold);
     }
-    @media (max-width: 520px) {
-      .friend-card {
-        grid-template-columns: 1fr;
-        text-align: center;
-        justify-items: center;
-      }
-      .friend-card-mark { transform: rotate(-6deg); }
+    .friend-band-note {
+      margin-top: 0.9rem;
+      font-family: "ZCOOL XiaoWei", serif;
+      font-size: 1rem;
+      color: rgba(196,163,90,0.9);
+      letter-spacing: 0.08em;
     }
 
     .seal {
