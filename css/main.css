@@ -958,22 +958,27 @@
     }
     footer p + p { margin-top: 0.4rem; }
 
+    .friends-section {
+      max-width: 720px;
+    }
     .friend-link-wrap {
-      position: relative;
-      z-index: 1;
-      text-align: center;
-      padding: 2rem 1.5rem 0.5rem;
+      margin-top: 0.25rem;
+      text-align: left;
+      padding: 0;
     }
     .friend-link {
       font-family: "Ma Shan Zheng", cursive;
-      font-size: clamp(1.6rem, 4.5vw, 2.1rem);
-      letter-spacing: 0.14em;
+      font-size: clamp(1.8rem, 5vw, 2.4rem);
+      letter-spacing: 0.12em;
       color: var(--gold);
       text-decoration: none;
-      transition: color 0.2s;
+      border-bottom: 2px solid rgba(196,92,72,0.7);
+      line-height: 1.35;
+      transition: color 0.2s, border-color 0.2s;
     }
     .friend-link:hover {
       color: var(--paper);
+      border-bottom-color: var(--gold);
     }
 
     .seal {
