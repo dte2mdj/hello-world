@@ -976,7 +976,7 @@
 
   <section id="lot">
     <h2 class="sec-title">摇签</h2>
-    <p class="sec-desc">命数在自己手里。抽到好签，护住；抽到差签——山房帮你逆天改命。</p>
+    <p class="sec-desc">命数在自己手里。抽到下下签，山房自动改命，直到上吉或上上——不用动手。</p>
     <div class="lot-stage" id="lotStage">
       <div id="lotInner">
         <div class="lot-stick" id="lotStick" aria-hidden="true"></div>
@@ -1390,14 +1390,20 @@
       renderHistory();
     });
 
-    /* Lot + 逆天改命仪式 */
+    /* Lot + 逆天改命仪式（全自动，改到上吉/上上为止） */
     const lotStage = document.getElementById("lotStage");
     const lotInner = document.getElementById("lotInner");
     const lotBtn = document.getElementById("lotBtn");
     const copyLot = document.getElementById("copyLot");
     let lastLot = null;
     let ritualBusy = false;
-    let ritualLot = null;
+    let rewriteRound = 0;
+
+    const GOOD_RANKS = new Set(["上上签", "上吉签"]);
+
+    function wait(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    }
 
     function resetLotStage() {
       lotStage.className = "lot-stage";
@@ -1423,159 +1429,164 @@
       setTimeout(() => layer.remove(), 1400);
     }
 
-    function setRitualStep(els, index) {
-      els.forEach((li, i) => {
-        li.classList.toggle("on", i === index);
-        li.classList.toggle("done", i < index);
-      });
+    function pickLot(preferGood) {
+      const pool = preferGood
+        ? lots.filter((l) => GOOD_RANKS.has(l.rank))
+        : lots;
+      let lot;
+      do {
+        lot = pool[Math.floor(Math.random() * pool.length)];
+      } while (pool.length > 1 && lot === lastLot);
+      lastLot = lot;
+      return lot;
     }
 
-    function goLotAction(kind) {
-      if (kind === "drop") {
-        document.getElementById("drop").scrollIntoView({ behavior: "smooth" });
-        setTimeout(() => worryInput.focus(), 400);
-        return;
-      }
-      document.getElementById("games").scrollIntoView({ behavior: "smooth" });
-      const tab = document.querySelector(`.game-tab[data-game="${kind}"]`);
-      if (tab) tab.click();
-      if (kind === "muyu") {
-        setTimeout(() => document.getElementById("muyuBtn").focus(), 450);
-      }
-      if (kind === "breathe") {
-        setTimeout(() => document.getElementById("breatheStart").click(), 500);
-      }
-    }
-
-    function finishRitual() {
-      stats.rewrites = (stats.rewrites || 0) + 1;
-      store.patch({ rewrites: stats.rewrites });
-      refreshNav();
-      lotStage.className = "lot-stage blessed";
-      const remedyBody = ritualLot.remedy.replace(/^逆天改命：/, "");
+    function renderRitualShell(lot, stepIndex, title, desc, extraHtml = "") {
+      const names = ["破妄", "焚旧", "聚炁", "封印"];
+      const steps = names.map((n, i) => {
+        let cls = "";
+        if (i < stepIndex) cls = "done";
+        if (i === stepIndex) cls = "on";
+        return `<li class="${cls}">${n}</li>`;
+      }).join("");
       lotInner.innerHTML =
         `<div class="ritual">` +
-        `<ul class="ritual-steps">` +
-        `<li class="done">破妄</li><li class="done">焚旧</li><li class="done">聚炁</li><li class="on">封印</li>` +
-        `</ul>` +
+        `<ul class="ritual-steps">${steps}</ul>` +
+        extraHtml +
+        `<p class="ritual-title">${title}</p>` +
+        `<p class="ritual-desc">${desc}</p>` +
+        `</div>`;
+    }
+
+    function showGoodLot(lot, fromRewrite) {
+      lotStage.className = "lot-stage blessed";
+      const note = fromRewrite
+        ? `<p class="lot-advice"><strong>逆天改命成功</strong><br />坏签已改。命数在自己手里——这签，是你改出来的。<br />${lot.advice}</p>`
+        : `<p class="lot-advice"><strong>护运一言</strong><br />${lot.advice}</p>`;
+      lotInner.innerHTML =
+        `<div class="lot-stick" id="lotStick" aria-hidden="true"></div>` +
+        `<div id="lotResult">` +
         `<div class="ritual-seal slam">命由<br />己造</div>` +
-        `<p class="ritual-title">改命完成</p>` +
-        `<p class="ritual-desc">下下签已被你改写。<br />${remedyBody}</p>` +
-        `<div class="lot-remedy-actions" style="justify-content:center">` +
-        `<button type="button" class="btn btn-primary" id="ritualFollow">${ritualLot.actionLabel}</button>` +
-        `<button type="button" class="btn" id="ritualAgain">再摇一签</button>` +
-        `</div></div>`;
+        `<p class="lot-rank">${lot.rank}</p>` +
+        `<p class="lot-text">${lot.t}</p>` +
+        note +
+        `</div>`;
       tapSound(520);
-      setTimeout(() => tapSound(360), 180);
-      document.getElementById("ritualFollow").addEventListener("click", () => {
-        goLotAction(ritualLot.action);
-      });
-      document.getElementById("ritualAgain").addEventListener("click", () => {
-        lotInner.innerHTML =
-          `<div class="lot-stick" id="lotStick" aria-hidden="true"></div>` +
-          `<div id="lotResult"><p class="lot-hint">心诚则灵。心不诚也灵，反正都是随机数。</p></div>`;
-        resetLotStage();
-        lotBtn.click();
-      });
+      setTimeout(() => tapSound(400), 160);
       ritualBusy = false;
       lotBtn.disabled = false;
       lotBtn.textContent = "再摇一签";
     }
 
-    function ritualSeal(stepEls) {
-      setRitualStep(stepEls, 3);
+    function showPlainLot(lot) {
+      lotStage.className = "lot-stage";
       lotInner.innerHTML =
-        `<div class="ritual">` +
-        `<ul class="ritual-steps">` +
-        `<li class="done">破妄</li><li class="done">焚旧</li><li class="done">聚炁</li><li class="on">封印</li>` +
-        `</ul>` +
-        `<p class="ritual-title">落印封印</p>` +
-        `<p class="ritual-desc">心念已定。按下封印，命数归你。</p>` +
-        `<button type="button" class="btn btn-primary" id="sealBtn">按下「命由己造」</button>` +
-        `</div>`;
-      document.getElementById("sealBtn").addEventListener("click", () => {
-        spawnAshes(18);
-        finishRitual();
-      });
-    }
-
-    function ritualGather(stepEls) {
-      lotStage.className = "lot-stage rewriting";
-      setRitualStep(stepEls, 2);
-      let charge = 0;
-      const need = 7;
-      lotInner.innerHTML =
-        `<div class="ritual">` +
-        `<ul class="ritual-steps">` +
-        `<li class="done">破妄</li><li class="done">焚旧</li><li class="on">聚炁</li><li>封印</li>` +
-        `</ul>` +
-        `<p class="ritual-title">聚炁改命</p>` +
-        `<p class="ritual-desc">连点光团 ${need} 次，把运从「天」抢回自己手里。</p>` +
-        `<button type="button" class="ritual-orb" id="qiOrb" aria-label="聚炁"><span>炁</span></button>` +
-        `<div class="ritual-progress"><i id="qiBar"></i></div>` +
-        `<p class="lot-hint" id="qiHint">0 / ${need}</p>` +
-        `</div>`;
-      const orb = document.getElementById("qiOrb");
-      const bar = document.getElementById("qiBar");
-      const hint = document.getElementById("qiHint");
-      orb.addEventListener("click", () => {
-        if (charge >= need) return;
-        charge += 1;
-        bar.style.width = (charge / need) * 100 + "%";
-        hint.textContent = `${charge} / ${need}`;
-        tapSound(300 + charge * 30);
-        orb.classList.add("charged");
-        setTimeout(() => orb.classList.remove("charged"), 200);
-        if (charge >= need) {
-          hint.textContent = "炁已足，准备封印……";
-          setTimeout(() => ritualSeal(stepEls), 700);
-        }
-      });
-    }
-
-    function ritualBurn(stepEls) {
-      setRitualStep(stepEls, 1);
-      const title = lotInner.querySelector(".ritual-title");
-      const desc = lotInner.querySelector(".ritual-desc");
-      const textEl = lotInner.querySelector(".lot-text");
-      const startBtn = document.getElementById("ritualStart");
-      if (title) title.textContent = "焚旧";
-      if (desc) desc.textContent = "旧签化灰。坏运气不配决定你是谁。";
-      if (startBtn) startBtn.remove();
-      if (textEl) textEl.classList.add("burn");
-      const stick = document.getElementById("lotStick");
-      if (stick) stick.classList.add("crack");
-      spawnAshes(16);
-      tapSound(220);
-      setTimeout(() => ritualGather(stepEls), 1500);
-    }
-
-    function startRitual(lot) {
-      ritualBusy = true;
-      ritualLot = lot;
-      lotBtn.disabled = true;
-      lotBtn.textContent = "改命中…";
-      lotStage.className = "lot-stage ominous flash-red";
-
-      lotInner.innerHTML =
-        `<div class="ritual">` +
-        `<ul class="ritual-steps" id="ritualSteps">` +
-        `<li class="on">破妄</li><li>焚旧</li><li>聚炁</li><li>封印</li>` +
-        `</ul>` +
         `<div class="lot-stick" id="lotStick" aria-hidden="true"></div>` +
-        `<p class="lot-rank bad">下下签</p>` +
+        `<div id="lotResult">` +
+        `<p class="lot-rank">${lot.rank}</p>` +
         `<p class="lot-text">${lot.t}</p>` +
-        `<p class="ritual-title">破妄</p>` +
-        `<p class="ritual-desc">签只是提醒，不是判决。<br />点下方，开始逆天改命。</p>` +
-        `<button type="button" class="btn btn-primary" id="ritualStart">开启逆天改命</button>` +
+        `<p class="lot-advice"><strong>护运一言</strong><br />${lot.advice}</p>` +
         `</div>`;
+      tapSound(440);
+      ritualBusy = false;
+      lotBtn.disabled = false;
+      lotBtn.textContent = "摇一签";
+    }
 
-      const stepEls = [...document.querySelectorAll("#ritualSteps li")];
-      document.getElementById("ritualStart").addEventListener("click", () => {
-        document.getElementById("ritualStart").disabled = true;
-        ritualBurn(stepEls);
-      });
-      tapSound(260);
+    async function runAutoRewrite(badLot) {
+      ritualBusy = true;
+      rewriteRound = 0;
+      lotBtn.disabled = true;
+      lotBtn.textContent = "自动改命中…";
+      let current = badLot;
+
+      while (!GOOD_RANKS.has(current.rank)) {
+        rewriteRound += 1;
+        lotStage.className = "lot-stage ominous flash-red";
+        renderRitualShell(
+          current,
+          0,
+          "破妄",
+          `第 ${rewriteRound} 次改命。<br />「${current.rank}」不配定你的结局。`,
+          `<div class="lot-stick" id="lotStick"></div>` +
+          `<p class="lot-rank bad">${current.rank}</p>` +
+          `<p class="lot-text">${current.t}</p>`
+        );
+        tapSound(260);
+        await wait(1100);
+
+        // 焚旧
+        lotStage.className = "lot-stage ominous";
+        const textEl = lotInner.querySelector(".lot-text");
+        const stick = document.getElementById("lotStick");
+        const title = lotInner.querySelector(".ritual-title");
+        const desc = lotInner.querySelector(".ritual-desc");
+        const steps = lotInner.querySelectorAll(".ritual-steps li");
+        steps.forEach((li, i) => {
+          li.classList.toggle("done", i < 1);
+          li.classList.toggle("on", i === 1);
+        });
+        if (title) title.textContent = "焚旧";
+        if (desc) desc.textContent = "旧签化灰。坏运留下，命由人改。";
+        if (textEl) textEl.classList.add("burn");
+        if (stick) stick.classList.add("crack");
+        spawnAshes(16);
+        tapSound(220);
+        await wait(1400);
+
+        // 聚炁 auto
+        lotStage.className = "lot-stage rewriting";
+        renderRitualShell(
+          current,
+          2,
+          "聚炁",
+          "炁自行汇聚——不用动手，命已经在往回夺。",
+          `<div class="ritual-orb charged" id="qiOrb"><span>炁</span></div>` +
+          `<div class="ritual-progress"><i id="qiBar"></i></div>` +
+          `<p class="lot-hint" id="qiHint">聚炁中…</p>`
+        );
+        const bar = document.getElementById("qiBar");
+        for (let p = 1; p <= 7; p++) {
+          bar.style.width = (p / 7) * 100 + "%";
+          document.getElementById("qiHint").textContent = `聚炁 ${p} / 7`;
+          tapSound(280 + p * 28);
+          await wait(220);
+        }
+        await wait(400);
+
+        // 封印 + 抽新签（偏向变好，但仍可能中平，继续循环）
+        renderRitualShell(
+          current,
+          3,
+          "封印",
+          "落印改写中……",
+          `<div class="ritual-seal slam">改</div>`
+        );
+        spawnAshes(12);
+        tapSound(480);
+        await wait(900);
+
+        // 越改越容易出好签：第1轮 50% 强制好签池，第2轮 80%，第3轮起必出好签
+        const forceGood = rewriteRound >= 3 || Math.random() < (0.35 + rewriteRound * 0.3);
+        current = pickLot(forceGood);
+        // 若仍非好签，短暂展示「还不够」再继续
+        if (!GOOD_RANKS.has(current.rank)) {
+          lotInner.innerHTML =
+            `<div class="ritual">` +
+            `<p class="lot-rank">${current.rank}</p>` +
+            `<p class="lot-text">${current.t}</p>` +
+            `<p class="ritual-title">还不够好</p>` +
+            `<p class="ritual-desc">中平也要再改。山房不收半成品命运。</p>` +
+            `</div>`;
+          tapSound(300);
+          await wait(1200);
+        }
+      }
+
+      stats.rewrites = (stats.rewrites || 0) + rewriteRound;
+      store.patch({ rewrites: stats.rewrites });
+      refreshNav();
+      showGoodLot(current, true);
     }
 
     function getLotStick() {
@@ -1594,30 +1605,23 @@
       }
       const stick = getLotStick();
       const result = getLotResult();
-      resetLotStage();
+      // clear seal leftovers
+      lotStage.className = "lot-stage";
+      ritualBusy = false;
       lotBtn.disabled = true;
+      lotBtn.textContent = "摇签中…";
       stick.classList.remove("shaking", "crack");
       stick.style.opacity = "1";
       void stick.offsetWidth;
       stick.classList.add("shaking");
       result.innerHTML = '<p class="lot-hint">签筒在响……</p>';
       setTimeout(() => {
-        let lot;
-        do {
-          lot = lots[Math.floor(Math.random() * lots.length)];
-        } while (lots.length > 1 && lot === lastLot);
-        lastLot = lot;
+        const lot = pickLot(false);
         if (lot.rank === "下下签") {
-          startRitual(lot);
+          runAutoRewrite(lot);
           return;
         }
-        result.innerHTML =
-          `<p class="lot-rank">${lot.rank}</p>` +
-          `<p class="lot-text">${lot.t}</p>` +
-          `<p class="lot-advice"><strong>护运一言</strong><br />${lot.advice}</p>`;
-        tapSound(440);
-        lotBtn.disabled = false;
-        lotBtn.textContent = "摇一签";
+        showPlainLot(lot);
       }, 2200);
     });
 
