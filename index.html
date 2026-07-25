@@ -976,7 +976,7 @@
 
   <section id="lot">
     <h2 class="sec-title">摇签</h2>
-    <p class="sec-desc">命数在自己手里。抽到下下签，山房自动改命，直到上吉或上上——不用动手。</p>
+    <p class="sec-desc">命数在自己手里。抽到下下签，山房自动改命到上吉/上上，顺带讲两句诙谐道语——不用动手。</p>
     <div class="lot-stage" id="lotStage">
       <div id="lotInner">
         <div class="lot-stick" id="lotStick" aria-hidden="true"></div>
@@ -1192,87 +1192,145 @@
       { t: "曲则全。退一步不是怂，是给你自己留条活路。", m: "第二十二章 · 退路" },
     ];
 
+    function pickLine(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    /* 诙谐道语：贴合无为、造命、祸福相倚，但不装神弄鬼 */
+    const wittyPo = [
+      "妄者，妄也。信它，它就真；拆它，它就纸。",
+      "下下签来报到？很好，靶子出现了，方便改。",
+      "天若有命，也要过你这关。你不同意，流程走不下去。",
+      "道德经没写「认栽」两章。倒是写了很多「知止」。",
+      "签凶，人不凶。人若软，签才硬。",
+    ];
+    const wittyBurn = [
+      "旧签火化，功德——不，是痛快——无量。",
+      "烧的不是运气，是那句「我就这样了」。",
+      "灰飞之后，执念交社保：缴不起，自动停保。",
+      "庄子说薪尽火传。我们说：坏签尽，心火传。",
+      "化为灰烬合格证：已不具备定义你的资质。",
+    ];
+    const wittyQi = [
+      "炁在聚。你坐着就行，天道加班你别掺和。",
+      "无为不是躺平，是少做蠢事，专做改命的事。",
+      "聚炁中：把散掉的注意力，从短视频里赎回来。",
+      "上善若水。水能载舟，也能把坏签冲走。",
+      "炁满则灵。灵的不是神仙，是你突然想清楚了。",
+    ];
+    const wittyQiTick = [
+      "一炁：先把慌收回来",
+      "二炁：骗子信号变弱",
+      "三炁：执念开始掉线",
+      "四炁：清静上线",
+      "五炁：命盘可编辑",
+      "六炁：天道排队中",
+      "七炁：轮到你发言",
+    ];
+    const wittySeal = [
+      "印落处，权在人。天道旁观，请勿插嘴。",
+      "命由己造——山房官方章，防伪：心安即真。",
+      "封印不是求神，是你跟自己签劳动合同：甲方乙方都是你。",
+      "一印定乾坤？不。一印定：从今天起不交智商税。",
+      "朱砂为证：坏签无效，好签生效，心情备案。",
+    ];
+    const wittyRetry = [
+      "半成品命运，山房拒收。再改。",
+      "中平像温水。温水煮青蛙，热油改命运——继续。",
+      "还行？不行。道友配得上更清爽的签。",
+      "祸兮福之所倚。这福还没倚稳，再推一把。",
+      "差不多得了？差不多就是还没到。再来。",
+    ];
+    const wittySuccess = [
+      "改命成功。天道表示：行吧，你说了算。",
+      "坏签已下岗，好签入职。试用期：你的每一天。",
+      "无为而无不为——刚才什么都没干，命已经更好了。",
+      "恭喜：你没有跪着求运，你站着把运改了。",
+      "上吉/上上不是赏赐，是你拒绝认栽的收据。",
+      "庄子笑了：天地与我并生，坏签与我无关。",
+    ];
+
     /* 核心：签只是提醒，命由人改。差签 → 给出可做的「逆天改命」功课。 */
     const lots = [
       {
         rank: "上上签",
-        t: "今日宜放下。不宜硬撑、不宜回怼、不宜深夜点外卖后悔。",
-        advice: "好运也要自己守。少作死、多睡觉，就是最稳的护运。",
+        t: "今日宜放下。不宜硬撑、不宜回怼、不宜把别人的焦虑当KPI。",
+        advice: "上上如清风：来了就享，走了不追。知足不辱，知止不殆——止住瞎忙，运才留得住。",
+      },
+      {
+        rank: "上上签",
+        t: "心一静，事就小。山房认证：你值得被善待，包括被自己善待。",
+        advice: "清静不是摆烂，是高级生产力。致虚极，守静笃——先静，再决定要不要卷。",
       },
       {
         rank: "上吉签",
-        t: "有贵人相助——贵人可能是你自己，睡个好觉就算。",
-        advice: "把「自己」当贵人用：做一件小事兑现承诺，运就接得住。",
+        t: "有贵人相助——贵人可能是你自己，睡个好觉就算上钟。",
+        advice: "贵人迟到没关系，你别先把自己炒了。上善若水：润物，不必刷存在感。",
       },
       {
         rank: "上吉签",
-        t: "所求皆顺。前提是你别主动去求不该求的人。",
-        advice: "顺的时候改小毛病。命好，也是一点点自己攒的。",
+        t: "所求皆顺。前提是你别去求不该求的人，也别求不该求的饼。",
+        advice: "顺境里少许愿、多兑现。轻诺必寡信——包括你对自己许的「明天一定」。",
+      },
+      {
+        rank: "上吉签",
+        t: "偏财运一般，清静运爆棚。少刷短视频，多看远处的山。",
+        advice: "见素抱朴：眼睛歇一歇，心就不容易被带去加班。",
       },
       {
         rank: "中平签",
-        t: "不好不坏，正适合摸鱼。过分努力会显得不懂道。",
-        advice: "中平可改上吉：今天只改一件事——早睡、少回一句、或把焦虑写进清心池。",
+        t: "不好不坏，正适合摸鱼。过分努力，有时是不懂道。",
+        advice: "中平像白开水：不甜，但能活。想更好？改一件小事就行，别一次改命改成过劳。",
       },
       {
         rank: "中平签",
-        t: "静观其变。变的是别人，你负责喝茶。",
-        advice: "旁观不是躺平。看清之后再出手，这一下，就是改命的力道。",
+        t: "静观其变。变的是别人，你负责喝茶——茶凉了再倒。",
+        advice: "旁观不是怂，是蓄力。飘风不终朝：等风停，再出门，发型更稳。",
       },
       {
         rank: "中平签",
-        t: "半信半疑最养生：信好事，疑骗子。",
-        advice: "识破一次骗局，命运就拐一次弯。怀疑权，握在你手里。",
+        t: "半信半疑最养生：信好事，疑骗子，更疑自我感动。",
+        advice: "信言不美，美言不信。谁把你夸上天，先查他有没有降落伞给你。",
+      },
+      {
+        rank: "中平签",
+        t: "今日宜「已读不回」。不是冷漠，是护心，也是当代不争。",
+        advice: "柔弱胜刚强：你不回，比回一百句「我解释一下」更有道味。",
       },
       {
         rank: "下下签",
-        t: "小心画饼。闻到焦香的不一定是机遇，可能是烧烤摊。",
-        remedy: "逆天改命：今天拒绝一个空口承诺（不点头、不签字、不垫钱）。你一拒绝，这条命就改了半寸。",
+        t: "小心画饼。闻到焦香的不一定是机遇，可能是路边烧烤摊。",
+        remedy: "今天拒绝一个空口承诺。你一拒绝，天道都觉得你专业。",
         action: "drop",
         actionLabel: "把画饼扔进池子",
       },
       {
         rank: "下下签",
-        t: "今日宜防诈骗：包括情感诈骗、职场诈骗、以及自我感动。",
-        remedy: "逆天改命：把正在消耗你的人和事，列一条，切断或降级联系。命不由骗子写，由你删。",
+        t: "今日宜防诈骗：情感的、职场的，还有自己骗自己的。",
+        remedy: "列一条正在消耗你的人和事，降级或切断。命不由骗子写，由你按删除键。",
         action: "drop",
         actionLabel: "写下要切断的消耗",
       },
       {
         rank: "下下签",
-        t: "诸事不宜硬刚。但可以改命，不必认栽。",
-        remedy: "逆天改命：硬刚改成「有边界的行动」——发一封该发的消息，或明确说一次「不」。命运怕的是清楚的人。",
+        t: "诸事不宜硬刚。但认栽更不宜——那叫把主权交给坏签。",
+        remedy: "把硬刚改成清楚的一句「不」。命运最怕边界清晰的人。",
         action: "muyu",
         actionLabel: "敲木鱼压惊改运",
       },
       {
         rank: "下下签",
-        t: "心绪易乱，容易被带节奏。乱不是命，是可改的状态。",
-        remedy: "逆天改命：先调息四轮，再做决定。心定了，下下签就改成你的垫脚石。",
+        t: "心绪易乱，容易被带节奏。乱不是命，是临时的信号干扰。",
+        remedy: "先调息，再决策。心定了，下下签只是路过的乌云。",
         action: "breathe",
         actionLabel: "立刻调息改命",
       },
       {
         rank: "下下签",
-        t: "今日易自我审判。苛责自己，比外界更伤运。",
-        remedy: "逆天改命：对自己说一句「别硬撑、先放下」，并做一件对身体好的小事（喝水、吃饭、出门走十分钟）。身体动了，命就开始动。",
+        t: "今日易自我审判。苛责自己，比外面的骗子更伤运。",
+        remedy: "对自己说「别硬撑、先放下」，再做一件对身体好的小事。身体动了，命就开始改合同条款。",
         action: "muyu",
         actionLabel: "敲木鱼换口气",
-      },
-      {
-        rank: "上上签",
-        t: "心一静，事就小。山房认证：你值得被善待，包括被自己善待。",
-        advice: "把这份清静当成主动选择，不是运气——选择本身就是造命。",
-      },
-      {
-        rank: "上吉签",
-        t: "偏财运一般，但清静运爆棚。少刷短视频，多看远处。",
-        advice: "主动戒半小时信息流，就是给命运腾地方。",
-      },
-      {
-        rank: "中平签",
-        t: "今日宜「已读不回」。不是冷漠，是护心。",
-        advice: "护心是改命的第一刀：你不献祭注意力，谁也夺不走你的节奏。",
       },
     ];
 
@@ -1461,7 +1519,7 @@
     function showGoodLot(lot, fromRewrite) {
       lotStage.className = "lot-stage blessed";
       const note = fromRewrite
-        ? `<p class="lot-advice"><strong>逆天改命成功</strong><br />坏签已改。命数在自己手里——这签，是你改出来的。<br />${lot.advice}</p>`
+        ? `<p class="lot-advice"><strong>逆天改命成功</strong><br />${pickLine(wittySuccess)}<br />${lot.advice}</p>`
         : `<p class="lot-advice"><strong>护运一言</strong><br />${lot.advice}</p>`;
       lotInner.innerHTML =
         `<div class="lot-stick" id="lotStick" aria-hidden="true"></div>` +
@@ -1507,13 +1565,13 @@
           current,
           0,
           "破妄",
-          `第 ${rewriteRound} 次改命。<br />「${current.rank}」不配定你的结局。`,
+          `第 ${rewriteRound} 次改命。<br />${pickLine(wittyPo)}`,
           `<div class="lot-stick" id="lotStick"></div>` +
           `<p class="lot-rank bad">${current.rank}</p>` +
           `<p class="lot-text">${current.t}</p>`
         );
         tapSound(260);
-        await wait(1100);
+        await wait(1300);
 
         // 焚旧
         lotStage.className = "lot-stage ominous";
@@ -1527,12 +1585,12 @@
           li.classList.toggle("on", i === 1);
         });
         if (title) title.textContent = "焚旧";
-        if (desc) desc.textContent = "旧签化灰。坏运留下，命由人改。";
+        if (desc) desc.innerHTML = pickLine(wittyBurn);
         if (textEl) textEl.classList.add("burn");
         if (stick) stick.classList.add("crack");
         spawnAshes(16);
         tapSound(220);
-        await wait(1400);
+        await wait(1500);
 
         // 聚炁 auto
         lotStage.className = "lot-stage rewriting";
@@ -1540,7 +1598,7 @@
           current,
           2,
           "聚炁",
-          "炁自行汇聚——不用动手，命已经在往回夺。",
+          pickLine(wittyQi),
           `<div class="ritual-orb charged" id="qiOrb"><span>炁</span></div>` +
           `<div class="ritual-progress"><i id="qiBar"></i></div>` +
           `<p class="lot-hint" id="qiHint">聚炁中…</p>`
@@ -1548,38 +1606,36 @@
         const bar = document.getElementById("qiBar");
         for (let p = 1; p <= 7; p++) {
           bar.style.width = (p / 7) * 100 + "%";
-          document.getElementById("qiHint").textContent = `聚炁 ${p} / 7`;
+          document.getElementById("qiHint").textContent = wittyQiTick[p - 1];
           tapSound(280 + p * 28);
-          await wait(220);
+          await wait(240);
         }
         await wait(400);
 
-        // 封印 + 抽新签（偏向变好，但仍可能中平，继续循环）
+        // 封印
         renderRitualShell(
           current,
           3,
           "封印",
-          "落印改写中……",
+          pickLine(wittySeal),
           `<div class="ritual-seal slam">改</div>`
         );
         spawnAshes(12);
         tapSound(480);
-        await wait(900);
+        await wait(1000);
 
-        // 越改越容易出好签：第1轮 50% 强制好签池，第2轮 80%，第3轮起必出好签
         const forceGood = rewriteRound >= 3 || Math.random() < (0.35 + rewriteRound * 0.3);
         current = pickLot(forceGood);
-        // 若仍非好签，短暂展示「还不够」再继续
         if (!GOOD_RANKS.has(current.rank)) {
           lotInner.innerHTML =
             `<div class="ritual">` +
             `<p class="lot-rank">${current.rank}</p>` +
             `<p class="lot-text">${current.t}</p>` +
             `<p class="ritual-title">还不够好</p>` +
-            `<p class="ritual-desc">中平也要再改。山房不收半成品命运。</p>` +
+            `<p class="ritual-desc">${pickLine(wittyRetry)}</p>` +
             `</div>`;
           tapSound(300);
-          await wait(1200);
+          await wait(1300);
         }
       }
 
