@@ -199,20 +199,8 @@ function initScams() {
     return canvas;
   }
 
-  function downloadBlob(blob, filename) {
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    a.rel = "noopener";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1500);
-  }
-
   async function generateShareImage(s, btn) {
-    const label = "生成分享图";
+    const label = "分享给道友";
     btn.disabled = true;
     btn.textContent = "生成中…";
     try {
@@ -221,25 +209,18 @@ function initScams() {
         canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("blob"))), "image/png");
       });
 
-      let copied = false;
       if (navigator.clipboard && window.ClipboardItem) {
-        try {
-          await navigator.clipboard.write([
-            new ClipboardItem({ "image/png": blob }),
-          ]);
-          copied = true;
-        } catch {
-          /* 部分浏览器不支持写图片，改走下载 */
-        }
+        await navigator.clipboard.write([
+          new ClipboardItem({ "image/png": blob }),
+        ]);
+        btn.textContent = "已复制到剪贴板";
+        WuweiBridge.addDao(1, "识破传出去了。");
+      } else {
+        throw new Error("clipboard-unsupported");
       }
-
-      const safeName = (s.tag || s.id || "骗局").replace(/[\\/:*?"<>|]/g, "");
-      downloadBlob(blob, `无为山房-${safeName}.png`);
-      btn.textContent = copied ? "已复制并下载" : "已下载图片";
-      WuweiBridge.addDao(1, "识破传出去了。");
     } catch (err) {
       console.error(err);
-      btn.textContent = "生成失败";
+      btn.textContent = "复制失败，可换浏览器重试";
     } finally {
       setTimeout(() => {
         btn.disabled = false;
@@ -292,7 +273,7 @@ function initScams() {
     const shareBtn = document.createElement("button");
     shareBtn.type = "button";
     shareBtn.className = "path-chip";
-    shareBtn.textContent = "生成分享图";
+    shareBtn.textContent = "分享给道友";
     shareBtn.addEventListener("click", (e) => {
       e.stopPropagation();
       generateShareImage(s, shareBtn);
