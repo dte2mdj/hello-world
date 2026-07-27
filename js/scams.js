@@ -2,6 +2,7 @@
 function initScams() {
   const { scams } = window.WuweiData;
   const scamList = document.getElementById("scamList");
+  const INITIAL = 6;
   const scamFallback =
     "data:image/svg+xml," +
     encodeURIComponent(
@@ -9,6 +10,9 @@ function initScams() {
     );
 
   const itemsById = {};
+  const extraItems = [];
+  let expanded = false;
+  let moreBtn = null;
 
   function closeAll() {
     scamList.querySelectorAll(".scam-item").forEach((el) => {
@@ -18,16 +22,25 @@ function initScams() {
     });
   }
 
+  function setExpanded(on) {
+    expanded = on;
+    extraItems.forEach((el) => {
+      el.hidden = !on;
+    });
+    if (moreBtn) {
+      const rest = Math.max(0, scams.length - INITIAL);
+      moreBtn.textContent = on ? "收起" : `显示更多（还有 ${rest} 条）`;
+      moreBtn.setAttribute("aria-expanded", on ? "true" : "false");
+    }
+  }
+
   function openItem(item) {
+    if (item.hidden) setExpanded(true);
     closeAll();
     item.classList.add("open");
     const label = item.querySelector(".scam-toggle");
     if (label) label.textContent = "收起";
-    requestAnimationFrame(() => {
-      const listTop = scamList.getBoundingClientRect().top;
-      const itemTop = item.getBoundingClientRect().top;
-      scamList.scrollTop += itemTop - listTop - 8;
-    });
+    item.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
 
   function wrapLines(ctx, text, maxWidth) {
@@ -128,7 +141,6 @@ function initScams() {
     const ctx = canvas.getContext("2d");
     ctx.scale(scale, scale);
 
-    // 背景
     const bg = ctx.createLinearGradient(0, 0, W, H);
     bg.addColorStop(0, "#15201c");
     bg.addColorStop(0.55, "#1a2420");
@@ -136,14 +148,12 @@ function initScams() {
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, W, H);
 
-    // 氛围光
     const glow = ctx.createRadialGradient(W * 0.2, 0, 20, W * 0.2, 0, 280);
     glow.addColorStop(0, "rgba(61,92,79,0.45)");
     glow.addColorStop(1, "transparent");
     ctx.fillStyle = glow;
     ctx.fillRect(0, 0, W, H);
 
-    // 边框
     ctx.strokeStyle = "rgba(196,163,90,0.35)";
     ctx.lineWidth = 2;
     ctx.strokeRect(18, 18, W - 36, H - 36);
@@ -160,8 +170,7 @@ function initScams() {
 
     ctx.fillStyle = "#eef3ef";
     ctx.font = '40px "Ma Shan Zheng", cursive';
-    const titleLines = wrapLines(ctx, s.title, contentW);
-    titleLines.forEach((line) => {
+    wrapLines(ctx, s.title, contentW).forEach((line) => {
       ctx.fillText(line, pad, y);
       y += 46;
     });
@@ -229,10 +238,14 @@ function initScams() {
     }
   }
 
-  function createItem(s) {
+  function createItem(s, index) {
     const item = document.createElement("div");
     item.className = "scam-item";
     item.dataset.id = s.id || "";
+    if (index >= INITIAL) {
+      item.hidden = true;
+      extraItems.push(item);
+    }
     item.innerHTML =
       `<button type="button" class="scam-head">` +
       `<img class="scam-thumb" src="${s.img}" alt="" loading="lazy" decoding="async" />` +
@@ -294,70 +307,26 @@ function initScams() {
     return item;
   }
 
-  scams.forEach((s) => {
-    const item = createItem(s);
+  scams.forEach((s, index) => {
+    const item = createItem(s, index);
     scamList.appendChild(item);
     if (s.id) itemsById[s.id] = item;
   });
 
-  // 指针在列表上时锁住整页，并把滚轮全部交给列表，避免「内外一起滚」
-  let pageLockY = 0;
-  let pageLocked = false;
-
-  function lockPageScroll() {
-    if (pageLocked) return;
-    pageLocked = true;
-    pageLockY = window.scrollY || window.pageYOffset || 0;
-    document.body.classList.add("scam-scroll-lock");
-    document.body.style.top = `-${pageLockY}px`;
+  if (scams.length > INITIAL) {
+    moreBtn = document.createElement("button");
+    moreBtn.type = "button";
+    moreBtn.className = "btn scam-more-btn";
+    moreBtn.setAttribute("aria-expanded", "false");
+    moreBtn.textContent = `显示更多（还有 ${scams.length - INITIAL} 条）`;
+    moreBtn.addEventListener("click", () => {
+      setExpanded(!expanded);
+      if (!expanded) {
+        moreBtn.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    });
+    scamList.after(moreBtn);
   }
-
-  function unlockPageScroll() {
-    if (!pageLocked) return;
-    pageLocked = false;
-    document.body.classList.remove("scam-scroll-lock");
-    document.body.style.top = "";
-    window.scrollTo(0, pageLockY);
-  }
-
-  function scrollScamListBy(deltaY) {
-    const max = Math.max(0, scamList.scrollHeight - scamList.clientHeight);
-    if (max <= 0) return false;
-    const next = Math.min(max, Math.max(0, scamList.scrollTop + deltaY));
-    scamList.scrollTop = next;
-    return true;
-  }
-
-  scamList.addEventListener("pointerenter", lockPageScroll);
-  scamList.addEventListener("pointerleave", unlockPageScroll);
-  scamList.addEventListener(
-    "touchstart",
-    () => {
-      lockPageScroll();
-    },
-    { passive: true }
-  );
-  scamList.addEventListener(
-    "touchend",
-    () => {
-      unlockPageScroll();
-    },
-    { passive: true }
-  );
-
-  document.addEventListener(
-    "wheel",
-    (e) => {
-      const over =
-        e.target === scamList ||
-        (e.target && e.target.closest && e.target.closest("#scamList"));
-      if (!over) return;
-      if (!scrollScamListBy(e.deltaY)) return;
-      e.preventDefault();
-      e.stopPropagation();
-    },
-    { passive: false, capture: true }
-  );
 
   window.WuweiScams = {
     openById(id) {
