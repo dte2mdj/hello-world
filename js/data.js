@@ -27,6 +27,7 @@ const oracles = [
   { t: "轻诺必寡信。说过「下次一定」的，多半没有下次。", m: "第六十三章 · 识人补", scamId: "laterpay" },
   { t: "大器晚成。你的人生不是短视频，别用完播率考核自己。", m: "第四十一章 · 节奏", scamId: "love" },
   { t: "知者不博，博者不知。什么都刷，什么都不剩。", m: "第八十一章 · 信息斋" },
+  { t: "功成而弗居。居功尚且不取，何况别人的锅？", m: "第二章 · 职场补", scamId: "blame" },
   { t: "曲则全。退一步不是怂，是给你自己留条活路。", m: "第二十二章 · 退路", scamId: "circle" },
 ];
 
@@ -231,6 +232,14 @@ const scams = [
     tag: "甩锅结构",
     verdict: "惨有很多原因。把结构性问题甩给你一个人，是最省事的骗局。天地不仁，别替系统背锅。",
     img: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=800&h=450&q=80",
+    credit: "Photo: Unsplash",
+  },
+  {
+    title: "「这锅你先背一下」",
+    id: "blame",
+    tag: "职场甩锅",
+    verdict: "出事前是「大家一起扛」，出事时是「当时你怎么没拦住」。锅从天上来，别伸手接——责任该落在决策上，不该落在好说话的人身上。曲则全：先保住边界，再谈复盘。",
+    img: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=800&h=450&q=80",
     credit: "Photo: Unsplash",
   },
   {
