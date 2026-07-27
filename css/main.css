@@ -966,6 +966,15 @@
     }
 
     .scam-list { display: grid; gap: 0.85rem; }
+    .scam-item.scam-more { display: none; }
+    .scam-list.is-expanded .scam-item.scam-more { display: block; }
+    .scam-more-btn {
+      display: block;
+      width: 100%;
+      margin-top: 1rem;
+      text-align: center;
+      letter-spacing: 0.14em;
+    }
     .scam-item {
       border: 1px solid rgba(216,228,220,0.12);
       background: rgba(18,26,23,0.45);
