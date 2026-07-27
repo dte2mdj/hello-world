@@ -300,15 +300,63 @@ function initScams() {
     if (s.id) itemsById[s.id] = item;
   });
 
-  // 列表内滚动不传导到整页（滚到顶/底也不顶走页面）
+  // 指针在列表上时锁住整页，并把滚轮全部交给列表，避免「内外一起滚」
+  let pageLockY = 0;
+  let pageLocked = false;
+
+  function lockPageScroll() {
+    if (pageLocked) return;
+    pageLocked = true;
+    pageLockY = window.scrollY || window.pageYOffset || 0;
+    document.body.classList.add("scam-scroll-lock");
+    document.body.style.top = `-${pageLockY}px`;
+  }
+
+  function unlockPageScroll() {
+    if (!pageLocked) return;
+    pageLocked = false;
+    document.body.classList.remove("scam-scroll-lock");
+    document.body.style.top = "";
+    window.scrollTo(0, pageLockY);
+  }
+
+  function scrollScamListBy(deltaY) {
+    const max = Math.max(0, scamList.scrollHeight - scamList.clientHeight);
+    if (max <= 0) return false;
+    const next = Math.min(max, Math.max(0, scamList.scrollTop + deltaY));
+    scamList.scrollTop = next;
+    return true;
+  }
+
+  scamList.addEventListener("pointerenter", lockPageScroll);
+  scamList.addEventListener("pointerleave", unlockPageScroll);
   scamList.addEventListener(
+    "touchstart",
+    () => {
+      lockPageScroll();
+    },
+    { passive: true }
+  );
+  scamList.addEventListener(
+    "touchend",
+    () => {
+      unlockPageScroll();
+    },
+    { passive: true }
+  );
+
+  document.addEventListener(
     "wheel",
     (e) => {
-      if (scamList.scrollHeight <= scamList.clientHeight + 1) return;
+      const over =
+        e.target === scamList ||
+        (e.target && e.target.closest && e.target.closest("#scamList"));
+      if (!over) return;
+      if (!scrollScamListBy(e.deltaY)) return;
       e.preventDefault();
-      scamList.scrollTop += e.deltaY;
+      e.stopPropagation();
     },
-    { passive: false }
+    { passive: false, capture: true }
   );
 
   window.WuweiScams = {

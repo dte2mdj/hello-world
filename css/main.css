@@ -973,14 +973,22 @@
       max-height: calc(var(--scam-row) * 6 + var(--scam-gap) * 5);
       overflow-x: hidden;
       overflow-y: auto;
-      overscroll-behavior: contain;
-      overscroll-behavior-y: contain;
+      overscroll-behavior: none;
+      overscroll-behavior-y: none;
       touch-action: pan-y;
+      -webkit-overflow-scrolling: touch;
       padding-right: 0.35rem;
       scrollbar-width: thin;
       scrollbar-color: rgba(196,163,90,0.35) transparent;
       mask-image: linear-gradient(180deg, #000 0%, #000 88%, transparent 100%);
       -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 88%, transparent 100%);
+    }
+    body.scam-scroll-lock {
+      position: fixed;
+      left: 0;
+      right: 0;
+      width: 100%;
+      overflow: hidden;
     }
     .scam-list:hover,
     .scam-list:focus-within {
