@@ -23,12 +23,229 @@ function initScams() {
     item.classList.add("open");
     const label = item.querySelector(".scam-toggle");
     if (label) label.textContent = "收起";
-    // 在列表视口内滚到该条，避免整页被顶跑
     requestAnimationFrame(() => {
       const listTop = scamList.getBoundingClientRect().top;
       const itemTop = item.getBoundingClientRect().top;
       scamList.scrollTop += itemTop - listTop - 8;
     });
+  }
+
+  function wrapLines(ctx, text, maxWidth) {
+    const lines = [];
+    let line = "";
+    for (const ch of String(text || "")) {
+      const next = line + ch;
+      if (ctx.measureText(next).width > maxWidth && line) {
+        lines.push(line);
+        line = ch === "\n" ? "" : ch;
+      } else if (ch === "\n") {
+        lines.push(line);
+        line = "";
+      } else {
+        line = next;
+      }
+    }
+    if (line) lines.push(line);
+    return lines.length ? lines : [""];
+  }
+
+  function loadShareImage(url) {
+    return new Promise((resolve) => {
+      if (!url) {
+        resolve(null);
+        return;
+      }
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.onload = () => resolve(img);
+      img.onerror = () => resolve(null);
+      img.src = url;
+    });
+  }
+
+  function drawCover(ctx, img, x, y, w, h) {
+    if (!img) {
+      ctx.fillStyle = "#243832";
+      ctx.fillRect(x, y, w, h);
+      ctx.fillStyle = "rgba(196,163,90,0.55)";
+      ctx.font = '28px "Ma Shan Zheng", cursive';
+      ctx.textAlign = "center";
+      ctx.fillText("无为山房", x + w / 2, y + h / 2 + 10);
+      ctx.textAlign = "left";
+      return;
+    }
+    const ir = img.width / img.height;
+    const br = w / h;
+    let sx = 0;
+    let sy = 0;
+    let sw = img.width;
+    let sh = img.height;
+    if (ir > br) {
+      sw = img.height * br;
+      sx = (img.width - sw) / 2;
+    } else {
+      sh = img.width / br;
+      sy = (img.height - sh) / 2;
+    }
+    ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
+    ctx.fillStyle = "rgba(26,36,32,0.28)";
+    ctx.fillRect(x, y, w, h);
+  }
+
+  async function renderScamShareCard(s) {
+    if (document.fonts && document.fonts.ready) {
+      try {
+        await document.fonts.ready;
+      } catch {
+        /* ignore */
+      }
+    }
+
+    const W = 720;
+    const pad = 48;
+    const contentW = W - pad * 2;
+    const measure = document.createElement("canvas").getContext("2d");
+    measure.font = '22px "ZCOOL XiaoWei", "Noto Serif SC", serif';
+    const verdictLines = wrapLines(measure, s.verdict, contentW);
+    const coverH = 220;
+    const H =
+      pad +
+      36 +
+      18 +
+      coverH +
+      28 +
+      42 +
+      28 +
+      verdictLines.length * 36 +
+      48 +
+      28 +
+      pad;
+
+    const scale = 2;
+    const canvas = document.createElement("canvas");
+    canvas.width = W * scale;
+    canvas.height = H * scale;
+    const ctx = canvas.getContext("2d");
+    ctx.scale(scale, scale);
+
+    // 背景
+    const bg = ctx.createLinearGradient(0, 0, W, H);
+    bg.addColorStop(0, "#15201c");
+    bg.addColorStop(0.55, "#1a2420");
+    bg.addColorStop(1, "#121a17");
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, W, H);
+
+    // 氛围光
+    const glow = ctx.createRadialGradient(W * 0.2, 0, 20, W * 0.2, 0, 280);
+    glow.addColorStop(0, "rgba(61,92,79,0.45)");
+    glow.addColorStop(1, "transparent");
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, W, H);
+
+    // 边框
+    ctx.strokeStyle = "rgba(196,163,90,0.35)";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(18, 18, W - 36, H - 36);
+
+    let y = pad;
+    ctx.fillStyle = "rgba(196,163,90,0.85)";
+    ctx.font = '18px "Noto Serif SC", serif';
+    ctx.fillText("无为山房 · 人间骗局图鉴", pad, y);
+    y += 18;
+
+    const coverImg = await loadShareImage(s.img);
+    drawCover(ctx, coverImg, pad, y, contentW, coverH);
+    y += coverH + 28;
+
+    ctx.fillStyle = "#eef3ef";
+    ctx.font = '40px "Ma Shan Zheng", cursive';
+    const titleLines = wrapLines(ctx, s.title, contentW);
+    titleLines.forEach((line) => {
+      ctx.fillText(line, pad, y);
+      y += 46;
+    });
+    y += 4;
+
+    ctx.fillStyle = "rgba(196,163,90,0.9)";
+    ctx.font = '18px "ZCOOL XiaoWei", serif';
+    ctx.fillText(s.tag || "识破", pad, y);
+    y += 20;
+
+    ctx.strokeStyle = "rgba(196,163,90,0.35)";
+    ctx.beginPath();
+    ctx.moveTo(pad, y);
+    ctx.lineTo(pad + 64, y);
+    ctx.stroke();
+    y += 28;
+
+    ctx.fillStyle = "rgba(216,228,220,0.88)";
+    ctx.font = '22px "ZCOOL XiaoWei", "Noto Serif SC", serif';
+    verdictLines.forEach((line) => {
+      ctx.fillText(line, pad, y);
+      y += 36;
+    });
+
+    y = H - pad - 8;
+    ctx.fillStyle = "rgba(196,92,72,0.9)";
+    ctx.font = '20px "Ma Shan Zheng", cursive';
+    ctx.fillText("别硬撑、先放下", pad, y);
+    ctx.fillStyle = "rgba(216,228,220,0.4)";
+    ctx.font = '14px "Noto Serif SC", serif';
+    ctx.textAlign = "right";
+    ctx.fillText("命数在自己手里", W - pad, y);
+    ctx.textAlign = "left";
+
+    return canvas;
+  }
+
+  function downloadBlob(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.rel = "noopener";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+  }
+
+  async function generateShareImage(s, btn) {
+    const label = "生成分享图";
+    btn.disabled = true;
+    btn.textContent = "生成中…";
+    try {
+      const canvas = await renderScamShareCard(s);
+      const blob = await new Promise((resolve, reject) => {
+        canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("blob"))), "image/png");
+      });
+
+      let copied = false;
+      if (navigator.clipboard && window.ClipboardItem) {
+        try {
+          await navigator.clipboard.write([
+            new ClipboardItem({ "image/png": blob }),
+          ]);
+          copied = true;
+        } catch {
+          /* 部分浏览器不支持写图片，改走下载 */
+        }
+      }
+
+      const safeName = (s.tag || s.id || "骗局").replace(/[\\/:*?"<>|]/g, "");
+      downloadBlob(blob, `无为山房-${safeName}.png`);
+      btn.textContent = copied ? "已复制并下载" : "已下载图片";
+      WuweiBridge.addDao(1, "识破传出去了。");
+    } catch (err) {
+      console.error(err);
+      btn.textContent = "生成失败";
+    } finally {
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.textContent = label;
+      }, 1600);
+    }
   }
 
   function createItem(s) {
@@ -72,30 +289,15 @@ function initScams() {
       e.stopPropagation();
       WuweiBridge.goto({ section: "lot" });
     });
-    const copyBtn = document.createElement("button");
-    copyBtn.type = "button";
-    copyBtn.className = "path-chip";
-    copyBtn.textContent = "复制转给道友";
-    copyBtn.addEventListener("click", async (e) => {
+    const shareBtn = document.createElement("button");
+    shareBtn.type = "button";
+    shareBtn.className = "path-chip";
+    shareBtn.textContent = "生成分享图";
+    shareBtn.addEventListener("click", (e) => {
       e.stopPropagation();
-      const link = `${location.origin}${location.pathname}#scams`;
-      const text =
-        `【无为山房·人间骗局图鉴】\n` +
-        `${s.title} · ${s.tag}\n` +
-        `${s.verdict}\n` +
-        `——别硬撑、先放下\n` +
-        link;
-      try {
-        await navigator.clipboard.writeText(text);
-        copyBtn.textContent = "已复制";
-        setTimeout(() => (copyBtn.textContent = "复制转给道友"), 1200);
-        WuweiBridge.addDao(1, "识破传出去了。");
-      } catch {
-        copyBtn.textContent = "复制失败";
-        setTimeout(() => (copyBtn.textContent = "复制转给道友"), 1200);
-      }
+      generateShareImage(s, shareBtn);
     });
-    actions.append(dropBtn, lotBtn, copyBtn);
+    actions.append(dropBtn, lotBtn, shareBtn);
 
     const btn = item.querySelector("button.scam-head");
     btn.addEventListener("click", () => {
