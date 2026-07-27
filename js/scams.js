@@ -84,7 +84,30 @@ function initScams() {
       e.stopPropagation();
       WuweiBridge.goto({ section: "lot" });
     });
-    actions.append(dropBtn, lotBtn);
+    const copyBtn = document.createElement("button");
+    copyBtn.type = "button";
+    copyBtn.className = "path-chip";
+    copyBtn.textContent = "复制转给道友";
+    copyBtn.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      const link = `${location.origin}${location.pathname}#scams`;
+      const text =
+        `【无为山房·人间骗局图鉴】\n` +
+        `${s.title} · ${s.tag}\n` +
+        `${s.verdict}\n` +
+        `——别硬撑、先放下\n` +
+        link;
+      try {
+        await navigator.clipboard.writeText(text);
+        copyBtn.textContent = "已复制";
+        setTimeout(() => (copyBtn.textContent = "复制转给道友"), 1200);
+        WuweiBridge.addDao(1, "识破传出去了。");
+      } catch {
+        copyBtn.textContent = "复制失败";
+        setTimeout(() => (copyBtn.textContent = "复制转给道友"), 1200);
+      }
+    });
+    actions.append(dropBtn, lotBtn, copyBtn);
 
     const btn = item.querySelector("button.scam-head");
     btn.addEventListener("click", () => {
