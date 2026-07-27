@@ -965,15 +965,25 @@
       flex-wrap: wrap;
     }
 
-    .scam-list { display: grid; gap: 0.85rem; }
-    .scam-item.scam-more { display: none; }
-    .scam-list.is-expanded .scam-item.scam-more { display: block; }
-    .scam-more-btn {
-      display: block;
-      width: 100%;
-      margin-top: 1rem;
-      text-align: center;
-      letter-spacing: 0.14em;
+    .scam-list {
+      --scam-row: 88px;
+      --scam-gap: 0.85rem;
+      display: grid;
+      gap: var(--scam-gap);
+      max-height: calc(var(--scam-row) * 6 + var(--scam-gap) * 5);
+      overflow-x: hidden;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      padding-right: 0.35rem;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(196,163,90,0.35) transparent;
+      mask-image: linear-gradient(180deg, #000 0%, #000 88%, transparent 100%);
+      -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 88%, transparent 100%);
+    }
+    .scam-list:hover,
+    .scam-list:focus-within {
+      mask-image: none;
+      -webkit-mask-image: none;
     }
     .scam-item {
       border: 1px solid rgba(216,228,220,0.12);
@@ -1067,6 +1077,7 @@
       letter-spacing: 0.04em;
     }
     @media (max-width: 520px) {
+      .scam-list { --scam-row: 72px; }
       .scam-item button.scam-head {
         grid-template-columns: 72px 1fr;
       }

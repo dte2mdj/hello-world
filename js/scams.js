@@ -2,7 +2,6 @@
 function initScams() {
   const { scams } = window.WuweiData;
   const scamList = document.getElementById("scamList");
-  const INITIAL = 10;
   const scamFallback =
     "data:image/svg+xml," +
     encodeURIComponent(
@@ -10,8 +9,6 @@ function initScams() {
     );
 
   const itemsById = {};
-  let expanded = false;
-  let moreBtn = null;
 
   function closeAll() {
     scamList.querySelectorAll(".scam-item").forEach((el) => {
@@ -22,30 +19,21 @@ function initScams() {
   }
 
   function openItem(item) {
-    // 深链打开时，若条目在「更多」里，先展开列表
-    if (item.classList.contains("scam-more") && !expanded) {
-      setExpanded(true);
-    }
     closeAll();
     item.classList.add("open");
     const label = item.querySelector(".scam-toggle");
     if (label) label.textContent = "收起";
-    item.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    // 在列表视口内滚到该条，避免整页被顶跑
+    requestAnimationFrame(() => {
+      const listTop = scamList.getBoundingClientRect().top;
+      const itemTop = item.getBoundingClientRect().top;
+      scamList.scrollTop += itemTop - listTop - 8;
+    });
   }
 
-  function setExpanded(on) {
-    expanded = on;
-    scamList.classList.toggle("is-expanded", on);
-    if (moreBtn) {
-      const rest = Math.max(0, scams.length - INITIAL);
-      moreBtn.textContent = on ? "收起更多" : `显示更多（还有 ${rest} 条）`;
-      moreBtn.setAttribute("aria-expanded", on ? "true" : "false");
-    }
-  }
-
-  function createItem(s, index) {
+  function createItem(s) {
     const item = document.createElement("div");
-    item.className = "scam-item" + (index >= INITIAL ? " scam-more" : "");
+    item.className = "scam-item";
     item.dataset.id = s.id || "";
     item.innerHTML =
       `<button type="button" class="scam-head">` +
@@ -123,26 +111,11 @@ function initScams() {
     return item;
   }
 
-  scams.forEach((s, index) => {
-    const item = createItem(s, index);
+  scams.forEach((s) => {
+    const item = createItem(s);
     scamList.appendChild(item);
     if (s.id) itemsById[s.id] = item;
   });
-
-  if (scams.length > INITIAL) {
-    moreBtn = document.createElement("button");
-    moreBtn.type = "button";
-    moreBtn.className = "btn scam-more-btn";
-    moreBtn.setAttribute("aria-expanded", "false");
-    moreBtn.textContent = `显示更多（还有 ${scams.length - INITIAL} 条）`;
-    moreBtn.addEventListener("click", () => {
-      setExpanded(!expanded);
-      if (expanded) {
-        moreBtn.scrollIntoView({ behavior: "smooth", block: "nearest" });
-      }
-    });
-    scamList.after(moreBtn);
-  }
 
   window.WuweiScams = {
     openById(id) {
