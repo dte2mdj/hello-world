@@ -1,15 +1,23 @@
 /* 无为山房 · 投烦恼 */
 function initDrop() {
-  const { quickWorryTags, generateWorryReply, getAiConfig, saveAiConfig } = window.WuweiReplies;
+  const {
+    quickWorryTags,
+    pickRandomWorry,
+    generateWorryReply,
+    getAiConfig,
+    saveAiConfig,
+  } = window.WuweiReplies;
   const { stats, persistStats } = window.WuweiStore;
   const worryInput = document.getElementById("worryInput");
   const dropBtn = document.getElementById("dropBtn");
+  const randomDropBtn = document.getElementById("randomDropBtn");
   const pond = document.getElementById("pond");
   const replyEl = document.getElementById("reply");
   const replyMeta = document.getElementById("replyMeta");
   const historyList = document.getElementById("historyList");
   const followEl = document.getElementById("dropFollow");
   const quickTags = document.getElementById("quickTags");
+  let dropping = false;
 
   // AI settings
   const aiEnabled = document.getElementById("aiEnabled");
@@ -58,6 +66,14 @@ function initDrop() {
     quickTags.appendChild(b);
   });
 
+  function setBusy(busy) {
+    dropping = busy;
+    dropBtn.disabled = busy;
+    if (randomDropBtn) randomDropBtn.disabled = busy;
+    dropBtn.textContent = busy ? "池水翻涌…" : "投入清心池";
+    if (randomDropBtn) randomDropBtn.textContent = busy ? "抽取中…" : "随机一投";
+  }
+
   function renderHistory() {
     historyList.innerHTML = "";
     if (!stats.history.length) {
@@ -93,12 +109,12 @@ function initDrop() {
     });
   }
 
-  dropBtn.addEventListener("click", async () => {
-    const raw = worryInput.value.trim();
-    const w = raw || "说不清的闷";
+  async function doDrop(raw) {
+    if (dropping) return;
+    const w = (raw || "").trim() || "说不清的闷";
     tapSound(320);
-    dropBtn.disabled = true;
-    dropBtn.textContent = "池水翻涌…";
+    setBusy(true);
+    worryInput.value = w;
 
     const float = document.createElement("div");
     float.className = "worry-float";
@@ -130,8 +146,7 @@ function initDrop() {
     }
 
     worryInput.value = "";
-    dropBtn.disabled = false;
-    dropBtn.textContent = "投入清心池";
+    setBusy(false);
 
     const now = new Date();
     const when = `${now.getMonth() + 1}/${now.getDate()} ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
@@ -143,10 +158,20 @@ function initDrop() {
     renderHistory();
     showFollow();
     WuweiBridge.addDao(1, "烦恼已投。");
+  }
+
+  dropBtn.addEventListener("click", () => {
+    doDrop(worryInput.value);
   });
 
+  if (randomDropBtn) {
+    randomDropBtn.addEventListener("click", () => {
+      doDrop(pickRandomWorry());
+    });
+  }
+
   renderHistory();
-  window.WuweiDrop = { renderHistory };
+  window.WuweiDrop = { renderHistory, doDrop, pickRandomWorry };
 }
 
 window.initDrop = initDrop;

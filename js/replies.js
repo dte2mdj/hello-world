@@ -17,6 +17,43 @@
     "讨好型人格", "裁员", "分手", "社交恐惧", "存不下钱",
   ];
 
+  /** 随机一投用的稍长烦恼句，和标签池互补 */
+  const randomWorries = [
+    "说不清的周一综合征",
+    "领导画了张很大的饼",
+    "消息已读，人未回",
+    "别人都好像过得很好",
+    "加班到忘记自己姓什么",
+    "房租又要涨了",
+    "催婚群消息 99+",
+    "讨好了半天还是不对",
+    "存钱总差那临门一脚",
+    "分手后还在翻聊天记录",
+    "裁员传闻在工位上空盘旋",
+    "社交软件一打开就想关",
+    "假装很好，其实很累",
+    "深夜突然开始自我攻击",
+    "内卷到连休息都像偷懒",
+    "对比完朋友圈更焦虑了",
+    "想躺平又有点不甘心",
+    "被一句「你怎么还不会」刺到",
+    "会议开完，事还在原地",
+    "心情像阴天，下不下雨都难受",
+  ];
+
+  function pickRandomWorry() {
+    const pool = randomWorries.length ? randomWorries : quickWorryTags;
+    const a = pool[Math.floor(Math.random() * pool.length)];
+    // 偶尔叠两个标签，更像真人随口念叨
+    if (Math.random() < 0.28 && quickWorryTags.length > 1) {
+      let b;
+      do {
+        b = quickWorryTags[Math.floor(Math.random() * quickWorryTags.length)];
+      } while (b === a);
+      return `${a}、${b}`;
+    }
+    return a;
+  }
   const openers = [
     "池水微澜，接住了。",
     "山房已签收。",
@@ -279,6 +316,8 @@
 
   window.WuweiReplies = {
     quickWorryTags,
+    randomWorries,
+    pickRandomWorry,
     composeLocalReply,
     generateWorryReply,
     getAiConfig,

@@ -131,34 +131,43 @@
     },
   ];
 
+  function mapChapter(ch, i, ctx) {
+    return {
+      index: i + 1,
+      title: ch.title,
+      mood: ch.mood,
+      fx: ch.fx,
+      ms: (ch.ms || 1400) + Math.floor(Math.random() * 300),
+      text: fill(ch.line, ctx),
+    };
+  }
+
   /**
-   * 生成一次逆天改命的章节队列（长度可变，结构可变）
-   * @param {{rank:string, sign:string, round:number}} ctx
+   * 生成一次逆天改命：正文 + 收束分开。
+   * 收束必须等好签落定后再播，避免「剧情已改判、签面还是中平」。
+   * @param {{rank:string, sign:string, round:number, hero?:string}} ctx
    */
   function buildFateJourney(ctx) {
     const arc = pick(arcs);
     const opening = pick(arc.openings);
-    const ending = pick(arc.endings);
+    const endingRaw = pick(arc.endings);
     const midCount = 2 + Math.floor(Math.random() * 3); // 2-4
     const middles = shuffle(arc.middles).slice(0, Math.min(midCount, arc.middles.length));
-    const chapters = [opening, ...middles];
+    const body = [opening, ...middles];
     if (Math.random() < 0.7 && arc.twists.length) {
-      const insertAt = 1 + Math.floor(Math.random() * Math.max(1, chapters.length - 1));
-      chapters.splice(insertAt, 0, pick(arc.twists));
+      const insertAt = 1 + Math.floor(Math.random() * Math.max(1, body.length - 1));
+      body.splice(insertAt, 0, pick(arc.twists));
     }
-    chapters.push(ending);
 
     return {
       arcName: arc.name,
       arcTag: arc.tag,
-      chapters: chapters.map((ch, i) => ({
-        index: i + 1,
-        title: ch.title,
-        mood: ch.mood,
-        fx: ch.fx,
-        ms: ch.ms + Math.floor(Math.random() * 300),
-        text: fill(ch.line, ctx),
-      })),
+      chapters: body.map((ch, i) => mapChapter(ch, i, ctx)),
+      /** 好签确定后调用，填入终局 rank/sign */
+      buildEnding(endCtx) {
+        const merged = { ...ctx, ...endCtx };
+        return mapChapter(endingRaw, body.length, merged);
+      },
     };
   }
 

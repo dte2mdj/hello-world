@@ -4,11 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>无为山房 · 别硬撑、先放下</title>
-  <meta name="description" content="无为山房：别硬撑、先放下。识破骗局、投烦恼、摇签改命、功课固本。" />
+  <meta name="description" content="无为山房。别硬撑、先放下。识破骗局、投烦恼、摇签改命、功课固本。" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;600;700&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="./css/main.css?v=friend4" />
+  <link rel="stylesheet" href="./css/main.css?v=lot-tube1" />
 </head>
 <body>
   <div class="sky" aria-hidden="true"></div>
@@ -32,14 +32,18 @@
   </nav>
 
   <header class="hero">
-    <h1 class="hero-brand">无为山房</h1>
-    <p class="hero-line">别硬撑、先放下。<br />识破 → 放下 → 改命 → 固本。命数在自己手里。</p>
+    <div class="hero-title">
+      <h1 class="hero-brand">无为山房</h1>
+      <p class="hero-gloss" lang="zh-CN">
+        <span>别硬撑</span>
+        <span>先放下</span>
+      </p>
+    </div>
     <div class="hero-cta">
-      <a class="btn btn-primary" href="#scams">先识破</a>
-      <a class="btn" href="#drop">先放下</a>
+      <a class="btn btn-primary" href="#drop">先放下</a>
+      <a class="btn" href="#scams">先识破</a>
       <a class="btn" href="#lot">先改命</a>
     </div>
-    <p class="journey">识破 <span>→</span> 放下 <span>→</span> 改命 <span>→</span> 固本</p>
   </header>
 
   <div class="divider"></div>
@@ -58,7 +62,10 @@
     <div class="drop-box">
       <div class="quick-tags" id="quickTags"></div>
       <textarea id="worryInput" maxlength="80" placeholder="例如：周一早上、领导画饼、群里已读不回、爱情诈骗、自己卷自己……"></textarea>
-      <button type="button" class="btn btn-primary" id="dropBtn">投入清心池</button>
+      <div class="drop-actions">
+        <button type="button" class="btn btn-primary" id="dropBtn">投入清心池</button>
+        <button type="button" class="btn" id="randomDropBtn">随机一投</button>
+      </div>
     </div>
     <details class="ai-panel">
       <summary>AI 动态解忧（可选）</summary>
@@ -86,29 +93,40 @@
 
   <section id="lot">
     <h2 class="sec-title">摇签</h2>
-    <p class="sec-desc">第三步：改命。下下签会开演随机小说剧情，过程写入纪事，直到上吉/上上。</p>
-    <div class="lot-layout">
-      <div class="lot-stage" id="lotStage">
-        <div id="lotInner">
-          <div class="lot-stick" id="lotStick" aria-hidden="true"></div>
-          <div id="lotResult">
-            <p class="lot-hint">心诚则灵。心不诚也灵，反正都是随机数。</p>
+    <p class="sec-desc">第三步：改命。下下签会开演随机小说剧情，过程写入下方纪事，直到上吉/上上。</p>
+    <div class="lot-stage" id="lotStage">
+      <div id="lotInner">
+        <div class="lot-tube" id="lotStick" aria-hidden="true">
+          <div class="lot-tube-sticks" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="lot-tube-body">
+            <span class="lot-tube-band"></span>
+            <span class="lot-tube-label">签</span>
           </div>
+          <div class="lot-tube-base"></div>
+        </div>
+        <div id="lotStageCaption">
+          <p class="lot-hint">心诚则灵。心不诚也灵，反正都是随机数。</p>
         </div>
       </div>
-      <aside class="fate-log" aria-live="polite">
-        <h3>改命纪事</h3>
-        <p class="fate-log-arc" id="fateChronicleArc">等待下一场改命…</p>
-        <ol id="fateChronicle" class="fate-chronicle"></ol>
-      </aside>
     </div>
+    <div class="lot-sheet is-empty" id="lotSheet" aria-live="polite"></div>
     <div class="oracle-actions">
       <button type="button" class="btn btn-primary" id="lotBtn">摇一签</button>
       <button type="button" class="btn" id="copyLot">复制签文</button>
     </div>
-    <div class="history fate-history-wrap">
-      <h3>往期改命实录</h3>
-      <ul id="fateHistory"></ul>
+    <div class="fate-journal">
+      <aside class="fate-log" id="fateLog" aria-live="polite">
+        <div class="fate-log-hd">
+          <h3>改命纪事</h3>
+          <p class="fate-log-arc" id="fateChronicleArc">等待下一场改命…</p>
+        </div>
+        <p class="fate-log-idle" id="fateLogIdle">抽到下下签时，剧情会落在这里成卷。</p>
+        <ol id="fateChronicle" class="fate-chronicle"></ol>
+      </aside>
+      <div class="history fate-history-wrap">
+        <h3>往期实录</h3>
+        <ul id="fateHistory"></ul>
+      </div>
     </div>
   </section>
 
@@ -200,20 +218,21 @@
   </section>
 
   <footer>
-    <p>无为山房 · 别硬撑、先放下</p>
+    <p>无为山房</p>
+    <p>别硬撑 · 先放下</p>
     <p>识破 → 放下 → 改命 → 固本 · 道可道，非常 996</p>
     <span class="seal">已放下</span>
   </footer>
 
   <script src="./js/data.js"></script>
-  <script src="./js/replies.js"></script>
-  <script src="./js/fate-stories.js"></script>
+  <script src="./js/replies.js?v=random-drop1"></script>
+  <script src="./js/fate-stories.js?v=lotfix1"></script>
   <script src="./js/store.js"></script>
   <script src="./js/audio.js"></script>
   <script src="./js/bridge.js"></script>
   <script src="./js/scams.js"></script>
-  <script src="./js/drop.js"></script>
-  <script src="./js/lot.js"></script>
+  <script src="./js/drop.js?v=random-drop1"></script>
+  <script src="./js/lot.js?v=lot-tube1"></script>
   <script src="./js/oracle.js"></script>
   <script src="./js/games.js"></script>
   <script src="./js/main.js"></script>
