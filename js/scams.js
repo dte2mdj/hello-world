@@ -300,6 +300,17 @@ function initScams() {
     if (s.id) itemsById[s.id] = item;
   });
 
+  // 列表内滚动不传导到整页（滚到顶/底也不顶走页面）
+  scamList.addEventListener(
+    "wheel",
+    (e) => {
+      if (scamList.scrollHeight <= scamList.clientHeight + 1) return;
+      e.preventDefault();
+      scamList.scrollTop += e.deltaY;
+    },
+    { passive: false }
+  );
+
   window.WuweiScams = {
     openById(id) {
       const item = itemsById[id];

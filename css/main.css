@@ -974,6 +974,8 @@
       overflow-x: hidden;
       overflow-y: auto;
       overscroll-behavior: contain;
+      overscroll-behavior-y: contain;
+      touch-action: pan-y;
       padding-right: 0.35rem;
       scrollbar-width: thin;
       scrollbar-color: rgba(196,163,90,0.35) transparent;
