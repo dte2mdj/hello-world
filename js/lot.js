@@ -58,10 +58,41 @@ function initLot() {
     );
   }
 
+  function rankTone(rank) {
+    if (rank === BAD_RANK) return "bad";
+    if (GOOD_RANKS.has(rank)) return "good";
+    return "mid";
+  }
+
+  function fallenStickHTML(rank) {
+    const tone = rankTone(rank);
+    return (
+      `<div class="lot-fallen-shadow" aria-hidden="true"></div>` +
+      `<div class="lot-fallen tone-${tone}" role="img" aria-label="${rank}">` +
+      `<span>${rank}</span>` +
+      `</div>`
+    );
+  }
+
+  /** 签筒 + 落地签条（签等写在签上） */
+  function drawSceneHTML(rank, captionHtml) {
+    return (
+      `<div class="lot-draw-scene">` +
+      tubeHTML("spent") +
+      fallenStickHTML(rank) +
+      `</div>` +
+      (captionHtml ? `<div id="lotStageCaption">${captionHtml}</div>` : `<div id="lotStageCaption"></div>`)
+    );
+  }
+
   function setStageCaption(html, tubeClass) {
     lotInner.innerHTML =
       tubeHTML(tubeClass) +
       `<div id="lotStageCaption">${html}</div>`;
+  }
+
+  function renderFallenLot(lot, captionHtml) {
+    lotInner.innerHTML = drawSceneHTML(lot.rank, captionHtml || "");
   }
 
   function spawnAshes(n = 14) {
@@ -202,17 +233,18 @@ function initLot() {
   function showGoodLot(lot, fromRewrite, journeyLog) {
     lastShownLot = lot;
     lotStage.className = "lot-stage blessed";
-    lotInner.innerHTML =
-      (fromRewrite
-        ? `<div class="ritual-seal slam">命由<br />己造</div>`
-        : tubeHTML("drawn")) +
-      `<div id="lotStageCaption"><p class="lot-rank">${lot.rank}</p></div>`;
+    renderFallenLot(
+      lot,
+      fromRewrite
+        ? `<p class="lot-hint">命由己造 · 签已落地</p>`
+        : `<p class="lot-hint">签已落地</p>`
+    );
 
     const note = fromRewrite
       ? `<p class="lot-advice"><strong>逆天改命成功</strong><br />${pickLine(wittySuccess)}<br />${lot.advice || ""}</p>`
       : `<p class="lot-advice"><strong>护运一言</strong><br />${lot.advice || ""}</p>`;
     fillSheet(
-      `<p class="lot-text">${lot.t}</p>` + note
+      `<p class="lot-rank">${lot.rank}</p><p class="lot-text">${lot.t}</p>` + note
     );
     if (fromRewrite) {
       followChips(lotSheet, [
@@ -234,8 +266,9 @@ function initLot() {
     lastShownLot = lot;
     lotStage.className = "lot-stage";
     clearChronicle();
-    setStageCaption(`<p class="lot-rank">${lot.rank}</p>`, "drawn");
+    renderFallenLot(lot, `<p class="lot-hint">签已落地</p>`);
     fillSheet(
+      `<p class="lot-rank">${lot.rank}</p>` +
       `<p class="lot-text">${lot.t}</p>` +
       `<p class="lot-advice"><strong>护运一言</strong><br />${lot.advice || lot.remedy || ""}</p>`
     );
@@ -260,18 +293,16 @@ function initLot() {
 
     try {
       lotStage.className = "lot-stage ominous flash-red";
-      lotInner.innerHTML =
-        `<div class="ritual">` +
-        `<p class="lot-rank bad">${badLot.rank}</p>` +
-        `<p class="ritual-title">坏签降临</p>` +
-        `<p class="ritual-kicker">山房不认栽</p>` +
-        `</div>`;
+      lotInner.innerHTML = drawSceneHTML(
+        badLot.rank,
+        `<p class="ritual-title">坏签落地</p><p class="ritual-kicker">山房不认栽</p>`
+      );
       appendChronicle(
         { index: 0, title: "序章", text: `抽得「${badLot.rank}」：${badLot.t}。改命程序启动。` },
         { arcName: "即将开演", arcTag: "序" }
       );
       tapSound(260);
-      await wait(1200);
+      await wait(1400);
 
       const journey = buildFateJourney({
         rank: badLot.rank,
@@ -369,19 +400,22 @@ function initLot() {
   });
 
   copyLot.addEventListener("click", async () => {
-    const rank =
+    const rankEl =
       (lotSheet && lotSheet.querySelector(".lot-rank")) ||
+      lotInner.querySelector(".lot-fallen span") ||
       lotInner.querySelector(".lot-rank");
-    const text =
-      (lotSheet && lotSheet.querySelector(".lot-text")) ||
-      (lastShownLot && lastShownLot.t);
+    const textEl = lotSheet && lotSheet.querySelector(".lot-text");
     const adviceEl = lotSheet && lotSheet.querySelector(".lot-advice");
     const chapters = chronicleEl
       ? [...chronicleEl.querySelectorAll("li")].map((li) => li.innerText.replace(/\s+/g, " ").trim())
       : [];
 
-    const rankText = rank ? rank.textContent : lastShownLot && lastShownLot.rank;
-    const textContent = typeof text === "string" ? text : text ? text.textContent : "";
+    const rankText = rankEl
+      ? rankEl.textContent
+      : lastShownLot && lastShownLot.rank;
+    const textContent = textEl
+      ? textEl.textContent
+      : lastShownLot && lastShownLot.t;
     if (!rankText || !textContent) {
       copyLot.textContent = "先摇一签";
       setTimeout(() => (copyLot.textContent = "复制签文"), 1000);

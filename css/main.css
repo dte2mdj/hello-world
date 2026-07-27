@@ -376,7 +376,7 @@
     .history-empty { opacity: 0.4; font-size: 0.9rem; }
 
     .lot-stage {
-      --lot-stage-h: 300px;
+      --lot-stage-h: 340px;
       text-align: center;
       padding: 0;
       background: rgba(18,26,23,0.5);
@@ -444,6 +444,126 @@
       background: rgba(22, 40, 32, 0.8);
       border-color: rgba(196,92,72,0.55);
       box-shadow: inset 0 0 70px rgba(196,92,72,0.15);
+    }
+    .lot-draw-scene {
+      position: relative;
+      width: min(240px, 78vw);
+      height: 200px;
+      margin: 0 auto;
+    }
+    .lot-draw-scene .lot-tube {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      margin: 0;
+      transform: translateX(-50%);
+      z-index: 1;
+    }
+    .lot-draw-scene .lot-tube.spent {
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,0.35)) saturate(0.92);
+    }
+    .lot-fallen {
+      position: absolute;
+      left: 50%;
+      bottom: 10px;
+      z-index: 3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 176px;
+      height: 38px;
+      margin-left: -72px;
+      padding: 0 0.85rem;
+      border-radius: 3px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.22), transparent 35%),
+        linear-gradient(180deg, #f2e4bc 0%, #d4b56a 42%, #9e7d3c 100%);
+      box-shadow:
+        0 8px 16px rgba(0,0,0,0.35),
+        inset 0 1px 0 rgba(255,255,255,0.35),
+        inset 0 -2px 4px rgba(0,0,0,0.18);
+      border: 1px solid rgba(90, 60, 20, 0.35);
+      transform-origin: center center;
+      animation: stick-drop 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    .lot-fallen span {
+      font-family: "Ma Shan Zheng", cursive;
+      font-size: 1.35rem;
+      letter-spacing: 0.42em;
+      text-indent: 0.42em;
+      color: #3a2412;
+      line-height: 1;
+      white-space: nowrap;
+    }
+    .lot-fallen.tone-good {
+      box-shadow:
+        0 8px 18px rgba(0,0,0,0.32),
+        0 0 22px rgba(196,163,90,0.35),
+        inset 0 1px 0 rgba(255,255,255,0.4);
+      border-color: rgba(196,163,90,0.55);
+    }
+    .lot-fallen.tone-good span { color: #6b3a1a; }
+    .lot-fallen.tone-bad {
+      background:
+        linear-gradient(180deg, rgba(255,200,180,0.15), transparent 40%),
+        linear-gradient(180deg, #e8c9a0 0%, #b07050 50%, #6a3428 100%);
+      border-color: rgba(196,92,72,0.55);
+      box-shadow:
+        0 8px 18px rgba(0,0,0,0.4),
+        0 0 20px rgba(196,92,72,0.28),
+        inset 0 1px 0 rgba(255,220,200,0.2);
+      animation-name: stick-drop-bad;
+    }
+    .lot-fallen.tone-bad span { color: #7a1f14; }
+    .lot-fallen.tone-mid span { color: #3f3220; }
+    .lot-fallen-shadow {
+      position: absolute;
+      left: 50%;
+      bottom: 4px;
+      width: 150px;
+      height: 10px;
+      margin-left: -60px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse at center, rgba(0,0,0,0.35), transparent 70%);
+      animation: stick-shadow 0.9s var(--ease) both;
+      z-index: 2;
+      pointer-events: none;
+    }
+    @keyframes stick-drop {
+      0% {
+        transform: translate(8px, -118px) rotate(-95deg) scale(0.45);
+        opacity: 0;
+      }
+      18% { opacity: 1; }
+      58% {
+        transform: translate(28px, 6px) rotate(16deg) scale(1.04);
+      }
+      78% {
+        transform: translate(18px, -3px) rotate(-14deg) scale(1);
+      }
+      100% {
+        transform: translate(14px, 0) rotate(-9deg) scale(1);
+      }
+    }
+    @keyframes stick-drop-bad {
+      0% {
+        transform: translate(-6px, -118px) rotate(80deg) scale(0.45);
+        opacity: 0;
+      }
+      18% { opacity: 1; }
+      55% {
+        transform: translate(-18px, 8px) rotate(-22deg) scale(1.05);
+      }
+      78% {
+        transform: translate(-8px, -2px) rotate(12deg);
+      }
+      100% {
+        transform: translate(-4px, 0) rotate(8deg);
+      }
+    }
+    @keyframes stick-shadow {
+      0%, 40% { opacity: 0; transform: scaleX(0.4); }
+      100% { opacity: 1; transform: scaleX(1); }
     }
     .lot-tube {
       --tube-w: 72px;
@@ -569,12 +689,18 @@
     .lot-tube.shaking .lot-tube-sticks i:nth-child(4) { animation-delay: 0.02s; }
     .lot-tube.shaking .lot-tube-sticks i:nth-child(5) { animation-delay: 0.1s; }
     .lot-tube.shaking .lot-tube-sticks i:nth-child(6) { animation-delay: 0.06s; }
-    .lot-tube.drawn .lot-tube-sticks i:nth-child(4) {
-      height: 52px;
-      background: linear-gradient(180deg, #fff4d0, #c4a35a 60%, #8a6f35);
-      animation: stick-rise 0.7s var(--ease) both;
-    }
     @keyframes tube-shake {
+      0%, 100% { transform: translateX(-50%) rotate(0deg); }
+      20% { transform: translateX(calc(-50% - 3px)) rotate(-11deg); }
+      40% { transform: translateX(calc(-50% + 3px)) rotate(10deg); }
+      60% { transform: translateX(calc(-50% - 2px)) rotate(-8deg); }
+      80% { transform: translateX(calc(-50% + 2px)) rotate(7deg); }
+    }
+    /* 摇签中的签筒不在 scene 里时，shake 用默认原点 */
+    #lotInner > .lot-tube.shaking {
+      animation-name: tube-shake-solo;
+    }
+    @keyframes tube-shake-solo {
       0%, 100% { transform: rotate(0deg) translateX(0); }
       20% { transform: rotate(-11deg) translateX(-3px); }
       40% { transform: rotate(10deg) translateX(3px); }
@@ -584,10 +710,6 @@
     @keyframes stick-rattle {
       0%, 100% { transform: rotate(0deg) translateY(0); }
       50% { transform: rotate(4deg) translateY(-3px); }
-    }
-    @keyframes stick-rise {
-      from { transform: translateY(8px); opacity: 0.7; }
-      to { transform: translateY(-10px); opacity: 1; }
     }
     /* 兼容旧类名 */
     .lot-stick { display: none; }
